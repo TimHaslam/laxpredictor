@@ -451,7 +451,7 @@
     <div class="sec-title">RPI RANKINGS — GIRLS LACROSSE</div>
     <p class="db-intro">Utah high school girls lacrosse RPI rankings. Updated: March 26, 2026.</p>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
-      <button class="btn" onclick="openRpiPaste()" style="background:var(--accent);color:#fff;font-size:12px;padding:6px 14px;">⬆ PASTE RPI DATA</button>
+      <button class="fbtn on" onclick="openRpiPaste()" style="font-size:11px;padding:6px 16px;">⬆ PASTE RPI DATA</button>
       <span id="rpiLastUpdated" style="font-size:11px;color:var(--dim);font-family:'DM Mono',monospace;"></span>
       <button onclick="clearRpiData()" style="font-size:10px;color:var(--dim);background:none;border:none;cursor:pointer;text-decoration:underline;margin-left:auto;">reset to defaults</button>
     </div>
@@ -482,8 +482,8 @@
       <div id="rpiPasteStatus" style="font-size:11px;margin-top:8px;min-height:16px;"></div>
 
       <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end;">
-        <button class="btn" onclick="parseAndStoreRPI()" style="background:var(--accent);color:#fff;">PARSE &amp; SAVE</button>
-        <button class="btn" onclick="closeRpiPaste()" style="background:var(--surface2);">DONE</button>
+        <button class="fbtn on" onclick="parseAndStoreRPI()" style="font-size:12px;padding:8px 18px;">PARSE &amp; SAVE</button>
+        <button class="fbtn" onclick="closeRpiPaste()" style="font-size:12px;padding:8px 18px;">DONE</button>
       </div>
     </div>
   </div>
@@ -1152,24 +1152,78 @@ function setRpiPasteTab(cls, btn) {
 }
 
 function parseRpiText(text, cls) {
+  // UHSAA copy-paste format (observed):
+  // Line 1: "RankSchoolRPI...1"  (header + first rank jammed together)
+  // Line 2: "Corner Canyon"       (school name — pure text)
+  // Line 3: "0.7044080.7777780.6604940.5718597-22"  (4 floats + record + next rank)
+  // Line 4: "Farmington"
+  // Line 5: "0.689712..."
+  // So: name lines alternate with data blob lines.
+
   const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
   const teams = [];
-  for (const line of lines) {
-    const parts = line.split(/\t|  +/).map(s => s.trim()).filter(Boolean);
-    if (parts.length < 3) continue;
-    let idx = 0;
-    if (/^\d+$/.test(parts[0])) idx = 1;
-    const name = parts[idx];
-    if (!name || /^[\d.\-]+$/.test(name)) continue;
-    let rpi = null, record = '';
-    for (let i = idx + 1; i < parts.length; i++) {
-      const v = parseFloat(parts[i]);
-      if (!isNaN(v) && rpi === null) { rpi = v; continue; }
-      if (/^\d+[-–]\d+$/.test(parts[i])) { record = parts[i]; break; }
-    }
-    if (rpi === null) continue;
-    teams.push({ name, rpi, class: cls, record });
+
+  function isNameLine(l) {
+    // A school name: starts with a letter, contains only letters/spaces/apostrophes
+    return /^[A-Za-z][A-Za-z\s']+$/.test(l);
   }
+
+  function parseDataBlob(blob) {
+    // Extract 4 floats of form 0.NNNNNN then parse tail for record
+    const floats = [];
+    let pos = 0;
+    let m;
+    const floatRe = /0\.\d{6}/g;
+    floatRe.lastIndex = 0;
+    while ((m = floatRe.exec(blob)) !== null) {
+      floats.push(parseFloat(m[0]));
+    }
+    const rpi = floats[0] ?? null;
+
+    // Find tail after last float match
+    const lastFloatMatch = [...blob.matchAll(/0\.\d{6}/g)].pop();
+    let record = '';
+    if (lastFloatMatch) {
+      const tail = blob.slice(lastFloatMatch.index + 8);
+      // tail = "W-L[rank_digits]"
+      const tm = tail.match(/^(\d{1,2})-(\d+)/);
+      if (tm) {
+        const w = parseInt(tm[1]);
+        const lRaw = tm[2];
+        let l;
+        if (lRaw.length <= 1) {
+          l = lRaw;
+        } else {
+          // Strip appended rank: take first digit (or two if >2 chars)
+          l = lRaw[0];
+          // If remaining is still > 20, it's probably 2-digit losses: rare but handle
+          if (lRaw.length >= 2 && parseInt(lRaw.slice(0,2)) <= 20 && lRaw.length === 2) {
+            // Could be no rank appended — but HS lacrosse losses rarely >9
+            // Default: take first digit as losses
+            l = lRaw[0];
+          }
+        }
+        record = w + '-' + l;
+      }
+    }
+    return { rpi, record };
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (!isNameLine(line)) continue;
+    // Next line should be the data blob
+    const next = lines[i + 1];
+    if (!next) continue;
+    if (isNameLine(next)) continue; // two names in a row = skip
+    if (!/^0\./.test(next) && !/^-?0\./.test(next)) continue; // blob must start with float
+
+    const { rpi, record } = parseDataBlob(next);
+    if (rpi === null) continue;
+    teams.push({ name: line, rpi, class: cls, record });
+    i++; // skip the blob line
+  }
+
   return teams;
 }
 
@@ -1185,8 +1239,9 @@ function parseAndStoreRPI() {
   const total = allTeams.length;
   const statusEl = document.getElementById('rpiPasteStatus');
   if (total === 0) {
+    const sample = (rpiPasteBuffer['6A']||rpiPasteBuffer['5A']||rpiPasteBuffer['4A']||'').slice(0,120).replace(/\n/g,' | ');
     statusEl.style.color = 'var(--red)';
-    statusEl.textContent = 'No teams parsed. Make sure you copy the full table including rank, name, RPI, and record columns.';
+    statusEl.innerHTML = 'No teams parsed.<br><span style="font-size:10px;opacity:0.7;">First 120 chars seen: ' + sample + '</span>';
     return;
   }
   const existing = RPI_ALL;
