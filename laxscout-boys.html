@@ -450,6 +450,11 @@
   <div class="tab-panel" id="tab-rpi">
     <div class="sec-title">RPI RANKINGS — BOYS LACROSSE</div>
     <p class="db-intro">Utah high school boys lacrosse RPI rankings. Updated: March 26, 2026.</p>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+      <button class="btn" onclick="openRpiPaste()" style="background:var(--accent);color:#fff;font-size:12px;padding:6px 14px;">⬆ PASTE RPI DATA</button>
+      <span id="rpiLastUpdated" style="font-size:11px;color:var(--dim);font-family:'DM Mono',monospace;"></span>
+      <button onclick="clearRpiData()" style="font-size:10px;color:var(--dim);background:none;border:none;cursor:pointer;text-decoration:underline;margin-left:auto;">reset to defaults</button>
+    </div>
     <div class="rpi-class-toggle" style="display:flex;gap:6px;margin-bottom:18px;">
       <button class="fbtn on" onclick="setRpiClass('all',this)">ALL</button>
       <button class="fbtn" onclick="setRpiClass('6A',this)">6A</button>
@@ -458,6 +463,29 @@
       <input class="srch" id="rpiSearch" placeholder="Search teams..." oninput="renderRPI()" style="margin-left:auto;" />
     </div>
     <div id="rpiWrap"></div>
+  </div>
+
+  <!-- RPI PASTE MODAL -->
+  <div id="rpiModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;width:min(560px,95vw);max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.25);">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:4px;">PASTE RPI DATA</div>
+      <p style="font-size:12px;color:var(--dim);margin-bottom:18px;">Go to <a href="https://uhsaa.org/uhsaa-boys-lacrosse-rpi/" target="_blank" style="color:var(--accent);">UHSAA Boys Lacrosse RPI</a>, click 6A, select all table text, copy &amp; paste below. Repeat for 5A and 4A.</p>
+
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <button class="rpi-paste-tab fbtn on" onclick="setRpiPasteTab('6A',this)">6A</button>
+        <button class="rpi-paste-tab fbtn" onclick="setRpiPasteTab('5A',this)">5A</button>
+        <button class="rpi-paste-tab fbtn" onclick="setRpiPasteTab('4A',this)">4A</button>
+      </div>
+
+      <div style="font-size:11px;color:var(--dim);margin-bottom:6px;">Current tab: <span id="rpiPasteClassLabel" style="font-weight:700;color:var(--accent);">6A</span></div>
+      <textarea id="rpiPasteArea" placeholder="Paste raw table text here (copied from UHSAA website)..." style="width:100%;height:200px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:12px;font-family:'DM Mono',monospace;resize:vertical;box-sizing:border-box;"></textarea>
+      <div id="rpiPasteStatus" style="font-size:11px;margin-top:8px;min-height:16px;"></div>
+
+      <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end;">
+        <button class="btn" onclick="parseAndStoreRPI()" style="background:var(--accent);color:#fff;">PARSE &amp; SAVE</button>
+        <button class="btn" onclick="closeRpiPaste()" style="background:var(--surface2);">DONE</button>
+      </div>
+    </div>
   </div>
 </main>
 
@@ -531,10 +559,24 @@ const RPI_DATA = [
   {name:'Highland',          rpi:-2.215,   class:'4A', record:''},
 ];
 
-const rpi6Sorted=RPI_DATA.filter(r=>r.class==='6A').sort((a,b)=>b.rpi-a.rpi).map((r,i)=>({...r,rank:i+1}));
-const rpi5Sorted=RPI_DATA.filter(r=>r.class==='5A').sort((a,b)=>b.rpi-a.rpi).map((r,i)=>({...r,rank:i+1}));
-const rpi4Sorted=RPI_DATA.filter(r=>r.class==='4A').sort((a,b)=>b.rpi-a.rpi).map((r,i)=>({...r,rank:i+1}));
-const RPI_ALL=[...rpi6Sorted,...rpi5Sorted,...rpi4Sorted];
+const RPI_LS_KEY = 'ls_boys_rpi_manual';
+function buildRpiAll(data) {
+  const s6=data.filter(r=>r.class==='6A').sort((a,b)=>b.rpi-a.rpi).map((r,i)=>({...r,rank:i+1}));
+  const s5=data.filter(r=>r.class==='5A').sort((a,b)=>b.rpi-a.rpi).map((r,i)=>({...r,rank:i+1}));
+  const s4=data.filter(r=>r.class==='4A').sort((a,b)=>b.rpi-a.rpi).map((r,i)=>({...r,rank:i+1}));
+  return [...s6,...s5,...s4];
+}
+function loadRpiAll() {
+  try {
+    const saved = localStorage.getItem(RPI_LS_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.teams && parsed.teams.length) return { teams: buildRpiAll(parsed.teams), date: parsed.date };
+    }
+  } catch(e) {}
+  return { teams: buildRpiAll(RPI_DATA), date: null };
+}
+let { teams: RPI_ALL, date: RPI_DATE } = loadRpiAll();
 
 function getRPI(teamName) {
   if (!teamName) return null;
@@ -601,7 +643,7 @@ function showTab(name, btn) {
   document.getElementById('tab-'+name).classList.add('on');
   btn.classList.add('on');
   if (name === 'database') renderDB();
-  if (name === 'rpi') renderRPI();
+  if (name === 'rpi') { renderRPI(); updateRpiDateLabel(); }
 }
 function tog(bId, cId) { document.getElementById(bId).classList.toggle('open'); document.getElementById(cId).classList.toggle('open'); }
 
@@ -1108,6 +1150,126 @@ function acc(t) { const g=t.correct+t.incorrect; return g?Math.round(t.correct/g
 function x(s) { return s?String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'):''; }
 
 // ── RPI ──
+// ── RPI PASTE MODAL ──────────────────────────────────────────────────────────
+let rpiPasteClass = '6A';
+const rpiPasteBuffer = { '6A': '', '5A': '', '4A': '' };
+
+function openRpiPaste() {
+  rpiPasteBuffer['6A'] = ''; rpiPasteBuffer['5A'] = ''; rpiPasteBuffer['4A'] = '';
+  rpiPasteClass = '6A';
+  document.querySelectorAll('.rpi-paste-tab').forEach((b,i)=>b.classList.toggle('on', i===0));
+  document.getElementById('rpiPasteClassLabel').textContent = '6A';
+  document.getElementById('rpiPasteArea').value = '';
+  document.getElementById('rpiPasteStatus').textContent = '';
+  document.getElementById('rpiModal').style.display = 'flex';
+}
+function closeRpiPaste() {
+  document.getElementById('rpiModal').style.display = 'none';
+}
+function setRpiPasteTab(cls, btn) {
+  // Save current textarea content to buffer before switching
+  rpiPasteBuffer[rpiPasteClass] = document.getElementById('rpiPasteArea').value;
+  rpiPasteClass = cls;
+  document.querySelectorAll('.rpi-paste-tab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('rpiPasteClassLabel').textContent = cls;
+  document.getElementById('rpiPasteArea').value = rpiPasteBuffer[cls] || '';
+  document.getElementById('rpiPasteStatus').textContent = '';
+}
+
+function parseRpiText(text, cls) {
+  // UHSAA table rows look like:
+  // "1  Skyridge  0.8103  9-0" or "1\tSkyridge\t0.8103\t9-0"
+  // We just need rank, name, rpi value, record
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  const teams = [];
+  for (const line of lines) {
+    // Split on 2+ spaces or tabs
+    const parts = line.split(/\t|  +/).map(s => s.trim()).filter(Boolean);
+    if (parts.length < 3) continue;
+
+    // First token: rank (number)?
+    let idx = 0;
+    if (/^\d+$/.test(parts[0])) idx = 1; // skip rank col
+
+    // Name is next non-numeric token
+    const name = parts[idx];
+    if (!name || /^[\d.\-]+$/.test(name)) continue; // skip if looks like a number
+
+    // RPI value: first float after name
+    let rpi = null, record = '';
+    for (let i = idx + 1; i < parts.length; i++) {
+      const v = parseFloat(parts[i]);
+      if (!isNaN(v) && rpi === null) { rpi = v; continue; }
+      // Record looks like W-L
+      if (/^\d+[-–]\d+$/.test(parts[i])) { record = parts[i]; break; }
+    }
+    if (rpi === null) continue;
+    teams.push({ name, rpi, class: cls, record });
+  }
+  return teams;
+}
+
+function parseAndStoreRPI() {
+  // Save current textarea
+  rpiPasteBuffer[rpiPasteClass] = document.getElementById('rpiPasteArea').value;
+
+  const allTeams = [];
+  const counts = {};
+  for (const cls of ['6A', '5A', '4A']) {
+    const parsed = parseRpiText(rpiPasteBuffer[cls] || '', cls);
+    counts[cls] = parsed.length;
+    allTeams.push(...parsed);
+  }
+
+  const total = allTeams.length;
+  const statusEl = document.getElementById('rpiPasteStatus');
+
+  if (total === 0) {
+    statusEl.style.color = 'var(--red)';
+    statusEl.textContent = 'No teams parsed. Make sure you copy the full table including rank, name, RPI, and record columns.';
+    return;
+  }
+
+  // Merge with existing data for classes that weren't pasted
+  const existing = RPI_ALL;
+  for (const cls of ['6A', '5A', '4A']) {
+    if (counts[cls] === 0) {
+      // Keep existing data for this class
+      allTeams.push(...existing.filter(r => r.class === cls));
+    }
+  }
+
+  const dateStr = new Date().toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'});
+  localStorage.setItem(RPI_LS_KEY, JSON.stringify({ teams: allTeams, date: dateStr }));
+
+  // Reload
+  const reloaded = loadRpiAll();
+  RPI_ALL = reloaded.teams;
+  RPI_DATE = reloaded.date;
+  renderRPI();
+  updateRpiDateLabel();
+
+  statusEl.style.color = 'var(--accent)';
+  statusEl.textContent = `✓ Saved: 6A=${counts['6A']} teams, 5A=${counts['5A']} teams, 4A=${counts['4A']} teams`;
+}
+
+function clearRpiData() {
+  if (!confirm('Reset RPI data back to built-in defaults?')) return;
+  localStorage.removeItem(RPI_LS_KEY);
+  const reloaded = loadRpiAll();
+  RPI_ALL = reloaded.teams;
+  RPI_DATE = reloaded.date;
+  renderRPI();
+  updateRpiDateLabel();
+}
+
+function updateRpiDateLabel() {
+  const el = document.getElementById('rpiLastUpdated');
+  if (el) el.textContent = RPI_DATE ? `Updated: ${RPI_DATE}` : '';
+}
+// ── END RPI PASTE MODAL ───────────────────────────────────────────────────────
+
 let rpiClass='all', rpiSortCol='rank', rpiSortDir='asc';
 function setRpiClass(cls,btn) { rpiClass=cls; document.querySelectorAll('.rpi-class-toggle .fbtn').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); renderRPI(); }
 function renderRPI() {
