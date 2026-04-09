@@ -241,6 +241,8 @@
   .rpi-bar-wrap { display:flex; align-items:center; gap:8px; }
   .rpi-bar { height:6px; border-radius:3px; min-width:2px; }
   .class-badge { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:1px; padding:2px 8px; border-radius:8px; font-weight:600; }
+  .badge-6a { background:#dcfce7; color:#16a34a; }
+  .badge-5a { background:var(--accent-light); color:var(--accent); }
   .badge-5a6a { background:var(--accent-light); color:var(--accent); }
   .badge-4a { background:var(--gold-light); color:var(--gold); }
   .rpi-edge { display:inline-flex; align-items:center; gap:4px; font-family:'DM Mono',monospace; font-size:9px; padding:2px 8px; border-radius:10px; border:1px solid; font-weight:600; }
@@ -303,7 +305,7 @@
     <div class="logo-sub">GIRLS LACROSSE TRACKER</div>
   </div>
   <div class="gender-switch">
-    <a href="laxscout-boys.html" class="gender-link">BOYS</a>
+    <a href="laxscout-boys.html" class="gender-link ">BOYS</a>
     <a href="#" class="gender-link active">GIRLS</a>
   </div>
   <div class="tabs">
@@ -450,7 +452,8 @@
     <p class="db-intro">Utah high school girls lacrosse RPI rankings. Updated: March 26, 2026.</p>
     <div class="rpi-class-toggle" style="display:flex;gap:6px;margin-bottom:18px;">
       <button class="fbtn on" onclick="setRpiClass('all',this)">ALL</button>
-      <button class="fbtn" onclick="setRpiClass('5A6A',this)">5A / 6A</button>
+      <button class="fbtn" onclick="setRpiClass('6A',this)">6A</button>
+      <button class="fbtn" onclick="setRpiClass('5A',this)">5A</button>
       <button class="fbtn" onclick="setRpiClass('4A',this)">4A</button>
       <input class="srch" id="rpiSearch" placeholder="Search teams..." oninput="renderRPI()" style="margin-left:auto;" />
     </div>
@@ -467,30 +470,30 @@ const HIST_KEY = 'ls_girls_hist';
 const SCHED_KEY = 'ls_girls_sched';
 
 const RPI_DATA = [
-  {name:'Skyridge',          rpi:0.821000, class:'5A6A', record:''},
-  {name:'Corner Canyon',     rpi:0.798000, class:'5A6A', record:''},
-  {name:'Alta',              rpi:0.774000, class:'5A6A', record:''},
-  {name:'Brighton',          rpi:0.751000, class:'5A6A', record:''},
-  {name:'Bountiful',         rpi:0.729000, class:'5A6A', record:''},
-  {name:'Park City',         rpi:0.706000, class:'5A6A', record:''},
-  {name:'Timpview',          rpi:0.684000, class:'5A6A', record:''},
-  {name:'Olympus',           rpi:0.661000, class:'5A6A', record:''},
-  {name:'Bingham',           rpi:0.638000, class:'5A6A', record:''},
-  {name:'Pleasant Grove',    rpi:0.616000, class:'5A6A', record:''},
-  {name:'Wasatch',           rpi:0.593000, class:'5A6A', record:''},
-  {name:'American Fork',     rpi:0.570000, class:'5A6A', record:''},
-  {name:'Springville',       rpi:0.548000, class:'5A6A', record:''},
-  {name:'Davis',             rpi:0.525000, class:'5A6A', record:''},
-  {name:'Weber',             rpi:0.502000, class:'5A6A', record:''},
-  {name:'East',              rpi:0.480000, class:'5A6A', record:''},
-  {name:'Spanish Fork',      rpi:0.457000, class:'5A6A', record:''},
-  {name:'Westlake',          rpi:0.434000, class:'5A6A', record:''},
-  {name:'Box Elder',         rpi:0.412000, class:'5A6A', record:''},
-  {name:'Viewmont',          rpi:0.389000, class:'5A6A', record:''},
-  {name:'Fremont',           rpi:0.366000, class:'5A6A', record:''},
-  {name:'Copper Hills',      rpi:0.344000, class:'5A6A', record:''},
-  {name:'Lone Peak',         rpi:0.321000, class:'5A6A', record:''},
-  {name:'Hillcrest',         rpi:0.298000, class:'5A6A', record:''},
+  {name:'Skyridge',          rpi:0.821000, class:'6A', record:''},
+  {name:'Corner Canyon',     rpi:0.798000, class:'6A', record:''},
+  {name:'Alta',              rpi:0.774000, class:'6A', record:''},
+  {name:'Brighton',          rpi:0.751000, class:'6A', record:''},
+  {name:'Bountiful',         rpi:0.729000, class:'6A', record:''},
+  {name:'Park City',         rpi:0.706000, class:'6A', record:''},
+  {name:'Timpview',          rpi:0.684000, class:'6A', record:''},
+  {name:'Olympus',           rpi:0.661000, class:'6A', record:''},
+  {name:'Bingham',           rpi:0.638000, class:'6A', record:''},
+  {name:'Pleasant Grove',    rpi:0.616000, class:'6A', record:''},
+  {name:'Wasatch',           rpi:0.593000, class:'6A', record:''},
+  {name:'American Fork',     rpi:0.570000, class:'6A', record:''},
+  {name:'Springville',       rpi:0.548000, class:'6A', record:''},
+  {name:'Davis',             rpi:0.525000, class:'6A', record:''},
+  {name:'Weber',             rpi:0.502000, class:'6A', record:''},
+  {name:'East',              rpi:0.480000, class:'6A', record:''},
+  {name:'Spanish Fork',      rpi:0.457000, class:'6A', record:''},
+  {name:'Westlake',          rpi:0.434000, class:'6A', record:''},
+  {name:'Box Elder',         rpi:0.412000, class:'6A', record:''},
+  {name:'Viewmont',          rpi:0.389000, class:'6A', record:''},
+  {name:'Fremont',           rpi:0.366000, class:'6A', record:''},
+  {name:'Copper Hills',      rpi:0.344000, class:'6A', record:''},
+  {name:'Lone Peak',         rpi:0.321000, class:'6A', record:''},
+  {name:'Hillcrest',         rpi:0.298000, class:'6A', record:''},
   {name:'Juan Diego Catholic', rpi:12.500, class:'4A', record:''},
   {name:'Waterford',         rpi:9.800,   class:'4A', record:''},
   {name:'Green Canyon',      rpi:5.200,   class:'4A', record:''},
@@ -503,9 +506,10 @@ const RPI_DATA = [
   {name:'Crimson Cliffs',    rpi:-11.200, class:'4A', record:''},
 ];
 
-const rpi56Sorted=RPI_DATA.filter(r=>r.class==='5A6A').sort((a,b)=>b.rpi-a.rpi).map((r,i)=>({...r,rank:i+1}));
+const rpi6Sorted=RPI_DATA.filter(r=>r.class==='6A').sort((a,b)=>b.rpi-a.rpi).map((r,i)=>({...r,rank:i+1}));
+const rpi5Sorted=RPI_DATA.filter(r=>r.class==='5A').sort((a,b)=>b.rpi-a.rpi).map((r,i)=>({...r,rank:i+1}));
 const rpi4Sorted=RPI_DATA.filter(r=>r.class==='4A').sort((a,b)=>b.rpi-a.rpi).map((r,i)=>({...r,rank:i+1}));
-const RPI_ALL=[...rpi56Sorted,...rpi4Sorted];
+const RPI_ALL=[...rpi6Sorted,...rpi5Sorted,...rpi4Sorted];
 
 function getRPI(teamName) {
   if (!teamName) return null;
@@ -523,7 +527,7 @@ function getRPI(teamName) {
   }
   return null;
 }
-function fmtRPI(r) { if(!r)return '—'; if(r.class==='5A6A')return r.rpi.toFixed(4); return (r.rpi>0?'+':'')+r.rpi.toFixed(4); }
+function fmtRPI(r) { if(!r)return '—'; return r.rpi.toFixed(4); }
 
 
 function canonicalize(name) {
@@ -1046,7 +1050,10 @@ function renderDB() {
     const safeId=t.name.replace(/[^a-zA-Z0-9]/g,'_');
     const isExp=expandedTeam===t.name;
     const tr=getRPI(t.name);
-    const rpiCell=tr?`<span style="font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:${tr.rpi>(tr.class==='5A6A'?0.6:5)?'var(--green)':tr.rpi>(tr.class==='5A6A'?0.45:0)?'var(--accent)':'var(--red)'}">#${tr.rank} <span style="font-weight:400;font-size:10px">${fmtRPI(tr)}</span></span> <span class="class-badge ${tr.class==='5A6A'?'badge-5a6a':'badge-4a'}" style="font-size:8px">${tr.class}</span>`:`<span style="color:var(--dim);font-size:11px">—</span>`;
+    const isDecimalRPI=tr&&(tr.class==='6A'||tr.class==='5A');
+    const rpiColor=tr?(isDecimalRPI?(tr.rpi>0.6?'var(--green)':tr.rpi>0.45?'var(--accent)':'var(--red)'):(tr.rpi>5?'var(--green)':tr.rpi>0?'var(--accent)':'var(--red)')):'';
+    const rpiBadgeCls=tr?({'6A':'badge-6a','5A':'badge-5a','4A':'badge-4a'}[tr.class]||'badge-4a'):'';
+    const rpiCell=tr?`<span style="font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:${rpiColor}">#${tr.rank} <span style="font-weight:400;font-size:10px">${fmtRPI(tr)}</span></span> <span class="class-badge ${rpiBadgeCls}" style="font-size:8px">${tr.class}</span>`:`<span style="color:var(--dim);font-size:11px">—</span>`;
     const histRec=(t.histWins||0)+(t.histLosses||0)>0?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--dim);margin-top:2px">${t.histWins||0}W-${t.histLosses||0}L historical</div>`:'';
     rows+=`<tr class="trow" onclick="togTeam('${x(t.name)}')"><td class="tcell">${x(t.name)}</td><td>${rpiCell}</td><td><span class="mono">${t.preds}</span>${pend}</td><td>${accHTML}</td><td>${seHTML}</td><td>${gfH}</td><td>${gaH}</td><td class="${dcl} mono">${gf>0||ga>0?diffStr:'—'}</td><td><span class="rpill ${rcl}">${t.predW}W ${t.predL}L</span>${histRec}</td></tr>
     <tr class="tdetrow ${isExp?'open':''}" id="tdr_${safeId}"><td colspan="9">${teamDetHTML(t)}</td></tr>`;
@@ -1080,22 +1087,35 @@ let rpiClass='all', rpiSortCol='rank', rpiSortDir='asc';
 function setRpiClass(cls,btn) { rpiClass=cls; document.querySelectorAll('.rpi-class-toggle .fbtn').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); renderRPI(); }
 function renderRPI() {
   const q=(document.getElementById('rpiSearch').value||'').toLowerCase();
-  let list=RPI_ALL.filter(r=>{ if(rpiClass==='5A6A'&&r.class!=='5A6A')return false; if(rpiClass==='4A'&&r.class!=='4A')return false; if(q&&!r.name.toLowerCase().includes(q))return false; return true; });
-  list=[...list].sort((a,b)=>{ let va,vb; if(rpiSortCol==='rank'){va=a.rank+(a.class==='4A'?1000:0);vb=b.rank+(b.class==='4A'?1000:0);}else if(rpiSortCol==='name'){va=a.name;vb=b.name;}else if(rpiSortCol==='rpi'){va=a.rpi;vb=b.rpi;} if(typeof va==='string')return rpiSortDir==='asc'?va.localeCompare(vb):vb.localeCompare(va); return rpiSortDir==='asc'?va-vb:vb-va; });
+  let list=RPI_ALL.filter(r=>{ if(rpiClass!=='all'&&r.class!==rpiClass)return false; if(q&&!r.name.toLowerCase().includes(q))return false; return true; });
+  list=[...list].sort((a,b)=>{ let va,vb;
+    const classOrder={'6A':0,'5A':1,'4A':2};
+    if(rpiSortCol==='rank'){va=(classOrder[a.class]??9)*1000+a.rank;vb=(classOrder[b.class]??9)*1000+b.rank;}
+    else if(rpiSortCol==='name'){va=a.name;vb=b.name;}
+    else if(rpiSortCol==='rpi'){va=a.rpi;vb=b.rpi;}
+    if(typeof va==='string')return rpiSortDir==='asc'?va.localeCompare(vb):vb.localeCompare(va);
+    return rpiSortDir==='asc'?va-vb:vb-va;
+  });
   if(!list.length){document.getElementById('rpiWrap').innerHTML='<div class="empty">No teams found.</div>';return;}
-  const max56=Math.max(...RPI_ALL.filter(r=>r.class==='5A6A').map(r=>r.rpi));
-  const max4=Math.max(...RPI_ALL.filter(r=>r.class==='4A').map(r=>r.rpi));
-  const min4=Math.min(...RPI_ALL.filter(r=>r.class==='4A').map(r=>r.rpi));
-  const range4=max4-min4;
+  // Compute bar scaling per class
+  const barScale={};
+  for (const cls of ['6A','5A','4A']) {
+    const vals=RPI_ALL.filter(r=>r.class===cls).map(r=>r.rpi);
+    if(!vals.length) continue;
+    const mn=Math.min(...vals), mx=Math.max(...vals);
+    barScale[cls]={min:mn, range:mx-mn||1};
+  }
   const cols=[{k:'rank',l:'Rank'},{k:'name',l:'Team'},{k:'rpi',l:'RPI'}];
   const ths=cols.map(c=>{const cl=rpiSortCol===c.k?(rpiSortDir==='asc'?'sasc':'sdsc'):'';return `<th class="${cl}" onclick="srtRPI('${c.k}')">${c.l}</th>`;}).join('')+'<th>Class</th><th>RPI Bar</th>';
+  const badgeCls={'6A':'badge-6a','5A':'badge-5a','4A':'badge-4a'};
   const rows=list.map(r=>{
     const rankCl=r.rank<=3?'top3':r.rank<=10?'top10':'';
-    let barPct,barColor;
-    if(r.class==='5A6A'){barPct=Math.max(4,Math.round((r.rpi/max56)*100));barColor=r.rpi>0.6?'var(--green)':r.rpi>0.45?'var(--accent)':'var(--red)';}
-    else{barPct=Math.max(4,Math.round(((r.rpi-min4)/range4)*100));barColor=r.rpi>5?'var(--green)':r.rpi>0?'var(--accent)':'var(--red)';}
-    const valColor=r.class==='5A6A'?(r.rpi>0.6?'var(--green)':r.rpi>0.45?'var(--accent)':'var(--red)'):(r.rpi>5?'var(--green)':r.rpi>0?'var(--accent)':'var(--red)');
-    return `<tr><td><span class="rpi-rank ${rankCl}">#${r.rank}</span></td><td style="font-weight:600">${x(r.name)}</td><td><span class="rpi-val" style="color:${valColor}">${fmtRPI(r)}</span></td><td><span class="class-badge ${r.class==='5A6A'?'badge-5a6a':'badge-4a'}">${r.class}</span></td><td><div class="rpi-bar-wrap"><div class="rpi-bar" style="width:${barPct}%;background:${barColor}"></div></div></td></tr>`;
+    const bs=barScale[r.class]||{min:0,range:1};
+    const barPct=Math.max(4,Math.round(((r.rpi-bs.min)/bs.range)*100));
+    const isDecimal=r.class==='6A'||r.class==='5A';
+    const barColor=isDecimal?(r.rpi>0.6?'var(--green)':r.rpi>0.45?'var(--accent)':'var(--red)'):(r.rpi>5?'var(--green)':r.rpi>0?'var(--accent)':'var(--red)');
+    const valColor=barColor;
+    return `<tr><td><span class="rpi-rank ${rankCl}">#${r.rank}</span></td><td style="font-weight:600">${x(r.name)}</td><td><span class="rpi-val" style="color:${valColor}">${fmtRPI(r)}</span></td><td><span class="class-badge ${badgeCls[r.class]||'badge-4a'}">${r.class}</span></td><td><div class="rpi-bar-wrap"><div class="rpi-bar" style="width:${barPct}%;background:${barColor}"></div></div></td></tr>`;
   }).join('');
   document.getElementById('rpiWrap').innerHTML=`<table class="rpi-tbl"><thead><tr>${ths}</tr></thead><tbody>${rows}</tbody></table>`;
 }
