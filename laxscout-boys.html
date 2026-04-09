@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAX SCOUT — Boys Lacrosse</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f6f9;
+    --surface: #ffffff;
+    --surface2: #f8f9fb;
+    --surface3: #eef0f4;
+    --border: #e2e6ed;
+    --border2: #d0d6e0;
+    --accent: #0066ff;
+    --accent-light: #e8f0ff;
+    --accent-rgb: 0,102,255;
+    --red: #e03040;
+    --red-light: #ffeaec;
+    --gold: #d97706;
+    --gold-light: #fef3c7;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --text: #0f172a;
+    --mid: #475569;
+    --dim: #94a3b8;
+    --r: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  header {
+    display: flex; align-items: center; gap: 14px; padding: 14px 28px;
+    border-bottom: 1px solid var(--border); background: #fff;
+    position: sticky; top: 0; z-index: 50;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .logo-box { width: 36px; height: 36px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: #fff; flex-shrink: 0; letter-spacing: 1px; }
+  .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--text); }
+  .logo-sub { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--dim); margin-top: 1px; }
+  .gender-switch { margin-left: 12px; display: flex; gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .gender-link { padding: 5px 14px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--mid); text-decoration: none; background: var(--surface2); transition: all 0.18s; }
+  .gender-link.active { background: var(--accent); color: #fff; }
+  .gender-link:first-child { border-right: 1px solid var(--border); }
+  .tabs { display: flex; gap: 3px; margin-left: auto; background: var(--surface3); border: 1px solid var(--border); border-radius: 10px; padding: 3px; }
+  .tab { padding: 6px 20px; border-radius: 8px; border: none; background: transparent; color: var(--mid); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 1px; cursor: pointer; transition: all 0.18s; font-weight: 500; }
+  .tab.on { background: var(--accent); color: #fff; box-shadow: 0 1px 4px rgba(var(--accent-rgb),0.25); }
+
+  main { max-width: 1080px; margin: 0 auto; padding: 28px 22px 80px; }
+  .tab-panel { display: none; }
+  .tab-panel.on { display: block; }
+
+  .tiles { display: grid; grid-template-columns: repeat(6,1fr); gap: 10px; margin-bottom: 24px; }
+  .tile { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 16px 18px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .tile-n { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; line-height: 1; }
+  .tile-l { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.5px; color: var(--dim); margin-top: 5px; text-transform: uppercase; }
+  .t-accent { color: var(--accent); }
+  .t-green { color: var(--green); }
+  .t-red { color: var(--red); }
+  .t-gold { color: var(--gold); }
+
+  /* ADD / SECTION PANELS */
+  .add-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .add-hdr { display: flex; align-items: center; gap: 12px; padding: 13px 20px; cursor: pointer; user-select: none; transition: background 0.15s; }
+  .add-hdr:hover { background: var(--surface2); }
+  .add-ttl { font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 2px; color: var(--mid); }
+  .add-sub { font-size: 12px; color: var(--dim); margin-left: 4px; }
+  .chev { margin-left: auto; color: var(--dim); font-size: 11px; transition: transform 0.22s; }
+  .chev.open { transform: rotate(180deg); }
+  .add-body { padding: 18px 20px; display: none; border-top: 1px solid var(--border); }
+  .add-body.open { display: block; }
+  .flbl { font-family: 'DM Mono', monospace; font-size: 9.5px; letter-spacing: 1.5px; color: var(--mid); text-transform: uppercase; margin-bottom: 5px; font-weight: 500; }
+  .inp { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 12px; padding: 9px 12px; outline: none; transition: border-color 0.2s; }
+  .inp:focus { border-color: var(--accent); }
+  .inp::placeholder { color: var(--dim); }
+  .txa { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 11.5px; line-height: 1.7; padding: 10px 12px; outline: none; resize: vertical; transition: border-color 0.2s; }
+  .txa:focus { border-color: var(--accent); }
+  .txa::placeholder { color: var(--dim); }
+  .save-btn { width: 100%; padding: 13px; background: var(--accent); border: none; border-radius: 9px; font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 3px; color: #fff; cursor: pointer; transition: all 0.2s; margin-top: 12px; }
+  .save-btn:hover { opacity: 0.88; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(var(--accent-rgb),0.25); }
+  .save-btn.green { background: var(--green); }
+  .err { background: var(--red-light); border: 1px solid #fca5a5; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: var(--red); margin-top: 10px; display: none; }
+  .err.show { display: block; }
+
+  /* GENERATE PACKAGE SECTION */
+  .gen-pkg-box {
+    background: linear-gradient(135deg, #0a1628 0%, #0d1f3c 100%);
+    border: 1px solid var(--accent);
+    border-radius: var(--r);
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 12px rgba(var(--accent-rgb),0.15);
+  }
+  .gen-pkg-hdr { display: flex; align-items: center; gap: 12px; padding: 14px 20px; cursor: pointer; user-select: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .gen-pkg-hdr:hover { background: rgba(255,255,255,0.04); }
+  .gen-pkg-ttl { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 2px; color: #e2e8f0; }
+  .gen-pkg-sub { font-size: 11px; color: #64748b; margin-left: 4px; }
+  .gen-pkg-body { padding: 18px 20px; display: none; }
+  .gen-pkg-body.open { display: block; }
+  .pkg-output { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 14px; font-family: 'DM Mono', monospace; font-size: 11px; color: #93c5fd; line-height: 1.7; max-height: 300px; overflow-y: auto; white-space: pre-wrap; margin-bottom: 12px; display: none; }
+  .pkg-output.show { display: block; }
+  .pkg-actions { display: flex; gap: 8px; }
+  .pkg-btn { flex: 1; padding: 11px; border: none; border-radius: 8px; font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 2px; cursor: pointer; transition: all 0.2s; }
+  .pkg-btn-gen { background: var(--accent); color: #fff; }
+  .pkg-btn-gen:hover { opacity: 0.88; transform: translateY(-1px); }
+  .pkg-btn-copy { background: #1e293b; color: #93c5fd; border: 1px solid #334155; font-size: 12px; letter-spacing: 1px; font-family: 'DM Mono', monospace; }
+  .pkg-btn-copy:hover { background: #263548; }
+  .pkg-paste-area { margin-top: 14px; }
+  .pkg-paste-lbl { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.5px; color: #64748b; text-transform: uppercase; margin-bottom: 6px; }
+
+  /* FILTERS */
+  .frow { display: flex; gap: 8px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+  .fbtn { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 5px 14px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--mid); cursor: pointer; transition: all 0.18s; font-weight: 500; }
+  .fbtn:hover { border-color: var(--border2); color: var(--text); }
+  .fbtn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .fbtn.fgld.on { background: var(--gold); border-color: var(--gold); color: #fff; }
+  .fbtn.frd.on { background: var(--red); border-color: var(--red); color: #fff; }
+  .srch { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 6px 16px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); outline: none; width: 200px; transition: border-color 0.2s; }
+  .srch:focus { border-color: var(--accent); }
+
+  /* PREDICTION CARDS */
+  .plist { display: flex; flex-direction: column; gap: 10px; }
+  .empty { text-align: center; padding: 60px 20px; font-size: 14px; color: var(--dim); line-height: 2.2; }
+  .pc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.05); transition: box-shadow 0.2s, border-color 0.2s; position: relative; }
+  .pc:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.09); border-color: var(--border2); }
+  .pc::before { content: ''; position: absolute; top:0; left:0; bottom:0; width: 4px; border-radius: 12px 0 0 12px; }
+  .pc.pending::before { background: var(--gold); }
+  .pc.correct::before { background: var(--green); }
+  .pc.incorrect::before { background: var(--red); }
+  .ptop { display: grid; grid-template-columns: 90px 1fr auto; gap: 0; cursor: pointer; padding: 0; }
+  .pdate-col { padding: 16px 14px 16px 18px; display: flex; flex-direction: column; justify-content: center; border-right: 1px solid var(--border); }
+  .pdate-day { font-family: 'Bebas Neue', sans-serif; font-size: 28px; line-height: 1; color: var(--text); }
+  .pdate-mon { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; color: var(--dim); text-transform: uppercase; margin-top: 1px; }
+  .pmatch-col { padding: 14px 16px; }
+  .pteams-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .pteam-a { font-size: 17px; font-weight: 700; color: var(--accent); }
+  .pteam-b { font-size: 17px; font-weight: 700; color: var(--red); }
+  .pvs-sep { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--dim); letter-spacing: 1px; }
+  .prob-display { display: flex; flex-direction: column; gap: 4px; }
+  .prob-teams-row { display: flex; justify-content: space-between; align-items: baseline; }
+  .prob-name { font-size: 11px; font-weight: 600; }
+  .prob-name.a { color: var(--accent); }
+  .prob-name.b { color: var(--red); }
+  .prob-pct { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1px; }
+  .prob-pct.a { color: var(--accent); }
+  .prob-pct.b { color: var(--red); }
+  .prob-track { height: 8px; background: var(--surface3); border-radius: 4px; overflow: hidden; display: flex; }
+  .prob-fill-a { height: 100%; background: var(--accent); border-radius: 4px 0 0 4px; }
+  .prob-fill-b { height: 100%; background: var(--red); border-radius: 0 4px 4px 0; }
+  .ppred-col { padding: 14px 18px 14px 14px; border-left: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; min-width: 160px; text-align: right; }
+  .ppred-lbl { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 1.5px; color: var(--dim); text-transform: uppercase; margin-bottom: 3px; }
+  .ppred-winner { font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 1px; color: var(--text); line-height: 1.1; }
+  .ppred-score { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--mid); margin-top: 4px; }
+  .ppred-conf { display: inline-block; margin-top: 6px; font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 1px; padding: 2px 8px; border-radius: 10px; }
+  .conf-low { background: var(--surface3); color: var(--mid); }
+  .conf-moderate { background: var(--gold-light); color: var(--gold); }
+  .conf-high { background: var(--accent-light); color: var(--accent); }
+  .conf-veryhigh { background: var(--green-light); color: var(--green); }
+  .pmeta-row { display: flex; align-items: center; gap: 8px; padding: 7px 18px; border-top: 1px solid var(--border); background: var(--surface2); flex-wrap: wrap; }
+  .actual-badge { font-family: 'DM Mono', monospace; font-size: 10px; background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 2px 9px; color: var(--mid); }
+  .actual-badge strong { color: var(--text); }
+  .score-err-badge { display: inline-flex; align-items: center; gap: 4px; font-family: 'DM Mono', monospace; font-size: 10px; padding: 2px 8px; border-radius: 10px; border: 1px solid; }
+  .score-err-great { background: var(--green-light); color: var(--green); border-color: #86efac; }
+  .score-err-ok { background: var(--gold-light); color: var(--gold); border-color: #fcd34d; }
+  .score-err-miss { background: var(--red-light); color: var(--red); border-color: #fca5a5; }
+  .outcome-badge { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; padding: 2px 9px; border-radius: 10px; font-weight: 600; }
+  .ob-correct { background: var(--green-light); color: var(--green); }
+  .ob-incorrect { background: var(--red-light); color: var(--red); }
+  .ob-pending { background: var(--gold-light); color: var(--gold); }
+  .expand-hint { margin-left: auto; font-size: 11px; color: var(--dim); }
+  .pdet { display: none; border-top: 1px solid var(--border); padding: 16px 18px 18px; background: var(--surface2); }
+  .pdet.open { display: block; }
+  .dgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .dblock { background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 13px 14px; }
+  .dtitle { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.5px; color: var(--dim); text-transform: uppercase; margin-bottom: 8px; font-weight: 500; }
+  .dbody { font-size: 13px; color: var(--mid); line-height: 1.75; white-space: pre-wrap; }
+  .orrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding-top: 4px; }
+  .olbl { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--mid); font-weight: 500; }
+  .obtns { display: flex; gap: 6px; }
+  .obtn { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; cursor: pointer; color: var(--mid); transition: all 0.18s; font-weight: 500; }
+  .obtn.correct.on { background: var(--green-light); border-color: #86efac; color: var(--green); }
+  .obtn.incorrect.on { background: var(--red-light); border-color: #fca5a5; color: var(--red); }
+  .arow { display: flex; gap: 7px; align-items: center; }
+  .ainp { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 11px; padding: 6px 10px; outline: none; width: 160px; transition: border-color 0.2s; }
+  .ainp:focus { border-color: var(--accent); }
+  .ainp::placeholder { color: var(--dim); }
+  .asave { background: var(--accent); border: none; border-radius: 8px; color: #fff; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; padding: 6px 13px; cursor: pointer; transition: all 0.18s; font-weight: 500; }
+  .asave:hover { opacity: 0.88; }
+  .delbtn { margin-left: auto; background: transparent; border: 1px solid transparent; border-radius: 8px; color: var(--dim); font-family: 'DM Mono', monospace; font-size: 10px; padding: 6px 10px; cursor: pointer; transition: all 0.18s; }
+  .delbtn:hover { border-color: #fca5a5; color: var(--red); }
+
+  /* DATABASE */
+  .db-intro { font-size: 13px; color: var(--mid); margin-bottom: 20px; line-height: 1.65; }
+  .db-top { display: flex; gap: 10px; align-items: center; margin-bottom: 18px; }
+  .dbsrch { background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 9px 14px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); outline: none; width: 260px; transition: border-color 0.2s; }
+  .dbsrch:focus { border-color: var(--accent); }
+  .dbcnt { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--dim); letter-spacing: 1px; margin-left: auto; }
+  .dbtbl { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+  .dbtbl th { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.5px; color: var(--mid); text-transform: uppercase; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); background: var(--surface2); cursor: pointer; user-select: none; white-space: nowrap; font-weight: 600; }
+  .dbtbl th:hover { color: var(--text); }
+  .dbtbl th.sasc::after { content: ' ▲'; font-size: 8px; }
+  .dbtbl th.sdsc::after { content: ' ▼'; font-size: 8px; }
+  .dbtbl td { padding: 11px 14px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
+  .dbtbl tr:last-child td { border-bottom: none; }
+  .dbtbl tr.trow:hover td { background: var(--accent-light); cursor: pointer; }
+  .tcell { font-weight: 700; color: var(--text); }
+  .mono { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--mid); }
+  .gcol { color: var(--green); font-weight: 600; }
+  .rcol { color: var(--red); font-weight: 600; }
+  .ncol { color: var(--gold); font-weight: 600; }
+  .rpill { display: inline-block; font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 1px; padding: 3px 10px; border-radius: 6px; }
+  .rpg { background: var(--green-light); color: var(--green); }
+  .rpb { background: var(--red-light); color: var(--red); }
+  .rpn { background: var(--gold-light); color: var(--gold); }
+  .accbar-wrap { display: inline-flex; align-items: center; gap: 6px; font-family: 'DM Mono', monospace; font-size: 11px; }
+  .accbar { width: 52px; height: 5px; background: var(--surface3); border-radius: 3px; overflow: hidden; }
+  .accfill { height: 100%; border-radius: 3px; }
+  .tdetrow { display: none; }
+  .tdetrow.open { display: table-row; }
+  .tdetrow td { background: var(--surface2); padding: 14px 16px; border-bottom: 1px solid var(--border); }
+  .h2hgrid { display: grid; grid-template-columns: repeat(auto-fill,minmax(190px,1fr)); gap: 8px; }
+  .h2hitem { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 12px; line-height: 1.75; color: var(--mid); }
+  .sec-title { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 2px; color: var(--mid); margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+  .sec-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* RPI */
+  .rpi-tbl { width:100%; border-collapse:collapse; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.05); }
+  .rpi-tbl th { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:1.5px; color:var(--mid); text-transform:uppercase; padding:10px 14px; text-align:left; border-bottom:1px solid var(--border); background:var(--surface2); cursor:pointer; user-select:none; white-space:nowrap; font-weight:600; }
+  .rpi-tbl th:hover { color:var(--text); }
+  .rpi-tbl th.sasc::after { content:' ▲'; font-size:8px; }
+  .rpi-tbl th.sdsc::after { content:' ▼'; font-size:8px; }
+  .rpi-tbl td { padding:10px 14px; border-bottom:1px solid var(--border); font-size:13px; vertical-align:middle; }
+  .rpi-tbl tr:last-child td { border-bottom:none; }
+  .rpi-tbl tr:hover td { background:var(--accent-light); }
+  .rpi-rank { font-family:'Bebas Neue',sans-serif; font-size:20px; color:var(--dim); width:50px; }
+  .rpi-rank.top3 { color:var(--gold); }
+  .rpi-rank.top10 { color:var(--accent); }
+  .rpi-val { font-family:'DM Mono',monospace; font-size:12px; font-weight:600; }
+  .rpi-bar-wrap { display:flex; align-items:center; gap:8px; }
+  .rpi-bar { height:6px; border-radius:3px; min-width:2px; }
+  .class-badge { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:1px; padding:2px 8px; border-radius:8px; font-weight:600; }
+  .badge-5a6a { background:var(--accent-light); color:var(--accent); }
+  .badge-4a { background:var(--gold-light); color:var(--gold); }
+  .rpi-edge { display:inline-flex; align-items:center; gap:4px; font-family:'DM Mono',monospace; font-size:9px; padding:2px 8px; border-radius:10px; border:1px solid; font-weight:600; }
+  .rpi-edge-big { background:#eff6ff; color:#1d4ed8; border-color:#bfdbfe; }
+  .rpi-edge-slight { background:#f0fdf4; color:#15803d; border-color:#bbf7d0; }
+  .rpi-edge-even { background:var(--surface3); color:var(--mid); border-color:var(--border); }
+  .rpi-edge-neg { background:var(--red-light); color:var(--red); border-color:#fca5a5; }
+
+  /* EXT IMPORT */
+  .ext-import-banner { background: linear-gradient(135deg, #0d1f3c 0%, #0a1628 100%); border: 1px solid var(--accent); border-radius: var(--r); overflow: hidden; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(var(--accent-rgb),0.15); }
+  .ext-import-hdr { display: flex; align-items: center; gap: 12px; padding: 13px 18px; cursor: pointer; user-select: none; transition: background 0.15s; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ext-import-hdr:hover { background: rgba(255,255,255,0.04); }
+  .ext-pulse { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); flex-shrink: 0; animation: extpulse 2s infinite; }
+  @keyframes extpulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.85)} }
+  .ext-pulse.has-data { background: var(--green); box-shadow: 0 0 8px var(--green); animation: none; }
+  .ext-import-ttl { font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 2px; color: #e2e8f0; }
+  .ext-import-sub { font-size: 11px; color: #64748b; margin-left: 4px; }
+  .ext-queue-badge { margin-left: auto; background: var(--accent); color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 1px; padding: 2px 10px; border-radius: 6px; display: none; }
+  .ext-queue-badge.show { display: block; }
+  .ext-import-body { padding: 16px 18px; display: none; background: rgba(0,0,0,0.2); }
+  .ext-import-body.open { display: block; }
+  .ext-no-data { font-size: 12px; color: #475569; line-height: 1.7; }
+  .ext-no-data code { background: rgba(0,102,255,0.15); color: #93c5fd; padding: 1px 6px; border-radius: 4px; font-family: 'DM Mono', monospace; font-size: 11px; }
+  .ext-game-preview { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; margin-bottom: 14px; }
+  .ext-game-row { display: flex; align-items: center; gap: 10px; padding: 7px 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; font-size: 12px; }
+  .ext-game-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .ext-game-dot.win { background: var(--green); }
+  .ext-game-dot.loss { background: var(--red); }
+  .ext-game-dot.upcoming { background: var(--accent); }
+  .ext-game-teams { flex: 1; color: #e2e8f0; font-weight: 600; }
+  .ext-game-score { font-family: 'DM Mono', monospace; font-size: 10px; color: #64748b; }
+  .ext-game-date { font-family: 'DM Mono', monospace; font-size: 9px; color: #334155; }
+  .ext-actions { display: flex; gap: 8px; }
+  .ext-btn { flex: 1; padding: 10px; border: none; border-radius: 8px; font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 2px; cursor: pointer; transition: all 0.2s; }
+  .ext-btn-import { background: var(--accent); color: #fff; }
+  .ext-btn-import:hover { opacity: 0.88; transform: translateY(-1px); }
+  .ext-btn-clear { background: rgba(255,255,255,0.06); color: #475569; border: 1px solid rgba(255,255,255,0.1); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; }
+  .ext-btn-clear:hover { background: rgba(255,255,255,0.1); color: #94a3b8; }
+  .ext-success { background: var(--green-light); border: 1px solid #86efac; border-radius: 8px; padding: 9px 13px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--green); margin-top: 10px; display: none; }
+  .ext-success.show { display: block; }
+
+  @media(max-width:700px) {
+    .tiles { grid-template-columns: 1fr 1fr; }
+    .dgrid { grid-template-columns: 1fr; }
+    .ptop { grid-template-columns: 70px 1fr; }
+    .ppred-col { display: none; }
+    main { padding: 16px 12px 60px; }
+    header { padding: 12px 14px; flex-wrap: wrap; }
+    .tabs { order: 3; width: 100%; }
+    .gender-switch { order: 2; }
+  }
+</style>
+
+</head>
+<body>
+<header>
+  <div class="logo-box">LS</div>
+  <div>
+    <div class="logo-text">LAX SCOUT</div>
+    <div class="logo-sub">BOYS LACROSSE TRACKER</div>
+  </div>
+  <div class="gender-switch">
+    <a href="laxscout-girls.html" class="gender-link">GIRLS</a>
+    <a href="#" class="gender-link active">BOYS</a>
+  </div>
+  <div class="tabs">
+    <button class="tab on" onclick="showTab('predictions',this)">PREDICTIONS</button>
+    <button class="tab" onclick="showTab('database',this)">TEAM DATABASE</button>
+    <button class="tab" onclick="showTab('rpi',this)">RPI RANKINGS</button>
+  </div>
+</header>
+
+<main>
+  <!-- PREDICTIONS TAB -->
+  <div class="tab-panel on" id="tab-predictions">
+    <div class="tiles">
+      <div class="tile"><div class="tile-n t-accent" id="tTotal">0</div><div class="tile-l">Predictions</div></div>
+      <div class="tile"><div class="tile-n t-green" id="tCorrect">0</div><div class="tile-l">Correct</div></div>
+      <div class="tile"><div class="tile-n t-red" id="tWrong">0</div><div class="tile-l">Incorrect</div></div>
+      <div class="tile"><div class="tile-n t-gold" id="tPct">—</div><div class="tile-l">Win Accuracy</div></div>
+      <div class="tile"><div class="tile-n t-accent" id="tScoreAcc" style="font-size:26px;">—</div><div class="tile-l">Avg Score Error</div></div>
+      <div class="tile"><div class="tile-n t-green" id="tHistCount" style="font-size:30px;">0</div><div class="tile-l">Historical Results</div></div>
+    </div>
+
+    <!-- EXTENSION IMPORT -->
+    <div class="ext-import-banner">
+      <div class="ext-import-hdr" onclick="tog('extBody','extChev')">
+        <div class="ext-pulse" id="extPulse"></div>
+        <div class="ext-import-ttl">IMPORT FROM EXTENSION</div>
+        <div class="ext-import-sub">MaxPreps scraper</div>
+        <div class="ext-queue-badge" id="extBadge"></div>
+        <div class="chev" id="extChev">▼</div>
+      </div>
+      <div class="add-body ext-import-body" id="extBody">
+        <div id="extNoData" class="ext-no-data">Connecting...</div>
+        <div id="extHasData" style="display:none">
+          <div class="ext-game-preview" id="extGameList"></div>
+          <div class="ext-actions">
+            <button class="ext-btn ext-btn-import" onclick="importFromExtension()">⚡ IMPORT ALL</button>
+            <button class="ext-btn ext-btn-clear" onclick="clearExtQueue()">Clear Queue</button>
+          </div>
+          <div class="ext-success" id="extSuccess"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GENERATE PREDICTIONS PACKAGE -->
+    <div class="gen-pkg-box">
+      <div class="gen-pkg-hdr" onclick="tog('pkgBody','pkgChev')">
+        <div class="logo-box" style="width:26px;height:26px;font-size:13px;background:rgba(255,255,255,0.1);box-shadow:none;">⚡</div>
+        <div class="gen-pkg-ttl">GENERATE PREDICTIONS PACKAGE</div>
+        <div class="gen-pkg-sub">Build from schedule + team data → paste to Claude → paste predictions back</div>
+        <div class="chev" id="pkgChev" style="color:#64748b;">▼</div>
+      </div>
+      <div class="gen-pkg-body" id="pkgBody">
+        <div style="font-size:12px;color:#64748b;margin-bottom:14px;line-height:1.7;">
+          Step 1: Click <strong style="color:#93c5fd">Generate</strong> to build a data package from your schedule and team database.<br>
+          Step 2: Copy it and paste into Claude chat.<br>
+          Step 3: Paste Claude's predictions back below and click <strong style="color:#93c5fd">Import Predictions</strong>.
+        </div>
+        <div class="pkg-actions" style="margin-bottom:14px;">
+          <button class="pkg-btn pkg-btn-gen" onclick="generatePackage()">⚡ GENERATE PACKAGE</button>
+          <button class="pkg-btn pkg-btn-copy" id="pkgCopyBtn" onclick="copyPackage()" style="display:none;">COPY TO CLIPBOARD</button>
+        </div>
+        <pre class="pkg-output" id="pkgOutput"></pre>
+        <div class="pkg-paste-area">
+          <div class="pkg-paste-lbl">Paste Claude's predictions here</div>
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+            <label style="font-family:'DM Mono',monospace;font-size:10px;color:#64748b;letter-spacing:1px;">GAME DATE</label>
+            <input type="date" id="pkgDate" class="inp" style="width:160px;background:#1e293b;border-color:#334155;color:#e2e8f0;" />
+          </div>
+          <textarea class="txa" id="pkgPaste" style="min-height:160px;background:#1e293b;border-color:#334155;color:#e2e8f0;" placeholder="Paste all predictions from Claude here..."></textarea>
+          <button class="save-btn" style="background:var(--green);" onclick="importPredictions()">IMPORT PREDICTIONS</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD PREDICTION MANUALLY -->
+    <div class="add-section">
+      <div class="add-hdr" onclick="tog('addBody','addChev')">
+        <div class="logo-box" style="width:26px;height:26px;font-size:13px;background:var(--accent-light);color:var(--accent);box-shadow:none;">+</div>
+        <div class="add-ttl">ADD SINGLE PREDICTION</div>
+        <div class="add-sub">Paste one analysis from chat</div>
+        <div class="chev" id="addChev">▼</div>
+      </div>
+      <div class="add-body" id="addBody">
+        <div style="margin-bottom:12px;"><div class="flbl">Game Date</div><input class="inp" id="fDate" type="date" style="width:180px;" /></div>
+        <div><div class="flbl" style="margin-bottom:5px;">Paste full analysis from chat</div>
+          <textarea class="txa" id="fPaste" style="min-height:120px;" placeholder="## ⚔️ Team A vs. Team B&#10;PREDICTED WINNER: Team B&#10;Win Probability: Team B 62% — Team A 38%&#10;..."></textarea>
+        </div>
+        <div class="err" id="parseErr"></div>
+        <button class="save-btn" onclick="savePred()">SAVE PREDICTION</button>
+      </div>
+    </div>
+
+    <!-- LOG HISTORICAL RESULTS -->
+    <div class="add-section">
+      <div class="add-hdr" onclick="tog('histBody','histChev')">
+        <div class="logo-box" style="width:26px;height:26px;font-size:13px;background:#f0fdf4;color:var(--green);box-shadow:none;">📋</div>
+        <div class="add-ttl">LOG HISTORICAL RESULTS</div>
+        <div class="add-sub">Bulk import past scores — builds team database</div>
+        <div class="chev" id="histChev">▼</div>
+      </div>
+      <div class="add-body" id="histBody">
+        <div style="font-size:12px;color:var(--mid);margin-bottom:12px;line-height:1.7;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;">
+          <strong>Format:</strong> One game per line:<br>
+          <code style="font-size:11px;color:var(--accent)">Team A 14 – Team B 9</code> &nbsp;|&nbsp; <code style="font-size:11px;color:var(--accent)">Mar 3 | Skyridge 15 @ Timpanogos 3</code>
+        </div>
+        <textarea class="txa" id="histPaste" style="min-height:140px;" placeholder="Mar 3 | Skyridge 15 @ Timpanogos 3&#10;Mar 4 | Juan Diego 14 @ Corner Canyon 13"></textarea>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:6px;">
+          <input class="inp" id="histYear" value="2026" style="width:80px;" />
+          <span style="font-size:12px;color:var(--dim)">Season year</span>
+        </div>
+        <div class="err" id="histErr"></div>
+        <div id="histPreview" style="display:none;margin-top:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:'DM Mono',monospace;font-size:11px;color:var(--mid);max-height:160px;overflow-y:auto;line-height:1.8;"></div>
+        <div style="display:flex;gap:10px;margin-top:10px;">
+          <button class="save-btn green" style="flex:1;" onclick="previewHist()">PREVIEW IMPORT</button>
+          <button class="save-btn" id="histConfirmBtn" style="display:none;flex:1;" onclick="confirmHist()">CONFIRM &amp; IMPORT</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="frow">
+      <button class="fbtn on" onclick="setF('all',this)">ALL</button>
+      <button class="fbtn fgld" onclick="setF('pending',this)">PENDING</button>
+      <button class="fbtn" onclick="setF('correct',this)">✓ CORRECT</button>
+      <button class="fbtn frd" onclick="setF('incorrect',this)">✗ INCORRECT</button>
+      <input class="srch" id="pSearch" placeholder="Search teams..." oninput="renderP()" />
+    </div>
+    <div class="plist" id="pList"></div>
+  </div>
+
+  <!-- DATABASE TAB -->
+  <div class="tab-panel" id="tab-database">
+    <div class="sec-title">TEAM DATABASE</div>
+    <p class="db-intro">Auto-built from all logged predictions and results. Click any team to expand history.</p>
+    <div class="db-top">
+      <input class="dbsrch" id="dbSearch" placeholder="Search teams..." oninput="renderDB()" />
+      <div class="dbcnt" id="dbCnt">0 teams</div>
+    </div>
+    <div id="dbWrap"><div class="empty">🥍<br><br>No team data yet.</div></div>
+  </div>
+
+  <!-- RPI TAB -->
+  <div class="tab-panel" id="tab-rpi">
+    <div class="sec-title">RPI RANKINGS — BOYS LACROSSE</div>
+    <p class="db-intro">Utah high school boys lacrosse RPI rankings. Updated: March 26, 2026.</p>
+    <div class="rpi-class-toggle" style="display:flex;gap:6px;margin-bottom:18px;">
+      <button class="fbtn on" onclick="setRpiClass('all',this)">ALL</button>
+      <button class="fbtn" onclick="setRpiClass('5A6A',this)">5A / 6A</button>
+      <button class="fbtn" onclick="setRpiClass('4A',this)">4A</button>
+      <input class="srch" id="rpiSearch" placeholder="Search teams..." oninput="renderRPI()" style="margin-left:auto;" />
+    </div>
+    <div id="rpiWrap"></div>
+  </div>
+</main>
+
+<script>
+const GENDER = 'boys';
+const SPORT_LABEL = 'Boys Lacrosse';
+const USR_KEY = 'ls_boys_usr';
+const OVR_KEY = 'ls_boys_ovr';
+const HIST_KEY = 'ls_boys_hist';
+const SCHED_KEY = 'ls_boys_sched';
+
+const RPI_DATA = [
+  {name:'Skyridge',          rpi:0.810345, class:'5A6A', record:'9-0'},
+  {name:'Corner Canyon',     rpi:0.676669, class:'5A6A', record:'6-2'},
+  {name:'Bingham',           rpi:0.635909, class:'5A6A', record:'6-2'},
+  {name:'Alta',              rpi:0.760402, class:'5A6A', record:'6-1'},
+  {name:'Bountiful',         rpi:0.743267, class:'5A6A', record:'7-1'},
+  {name:'Brighton',          rpi:0.756007, class:'5A6A', record:'5-1'},
+  {name:'Park City',         rpi:0.695129, class:'5A6A', record:'6-2'},
+  {name:'Timpview',          rpi:0.633804, class:'5A6A', record:'9-1'},
+  {name:'Olympus',           rpi:0.647243, class:'5A6A', record:'5-3'},
+  {name:'Weber',             rpi:0.602507, class:'5A6A', record:'6-2'},
+  {name:'East',              rpi:0.590316, class:'5A6A', record:'6-3'},
+  {name:'Westlake',          rpi:0.586467, class:'5A6A', record:'5-2'},
+  {name:'Wasatch',           rpi:0.614159, class:'5A6A', record:'6-2'},
+  {name:'Pleasant Grove',    rpi:0.616769, class:'5A6A', record:'7-2'},
+  {name:'Box Elder',         rpi:0.552719, class:'5A6A', record:'5-3'},
+  {name:'Springville',       rpi:0.561455, class:'5A6A', record:'7-2'},
+  {name:'Spanish Fork',      rpi:0.527376, class:'5A6A', record:'6-3'},
+  {name:'West Field',        rpi:0.526738, class:'5A6A', record:'4-4'},
+  {name:'Payson',            rpi:0.516658, class:'5A6A', record:'5-4'},
+  {name:'Davis',             rpi:0.515004, class:'5A6A', record:'5-3'},
+  {name:'American Fork',     rpi:0.505401, class:'5A6A', record:'7-3'},
+  {name:'Viewmont',          rpi:0.453500, class:'5A6A', record:'4-5'},
+  {name:'Northridge',        rpi:0.434034, class:'5A6A', record:'3-5'},
+  {name:'Fremont',           rpi:0.417161, class:'5A6A', record:'2-7'},
+  {name:'Maple Mountain',    rpi:0.403381, class:'5A6A', record:'2-6'},
+  {name:'Copper Hills',      rpi:0.401705, class:'5A6A', record:'2-5'},
+  {name:'Skyline',           rpi:0.402727, class:'5A6A', record:'2-6'},
+  {name:'Salem Hills',       rpi:0.363628, class:'5A6A', record:'2-6'},
+  {name:'Hillcrest',         rpi:0.339597, class:'5A6A', record:'2-8'},
+  {name:'Bonneville',        rpi:0.317215, class:'5A6A', record:'2-5'},
+  {name:'Woods Cross',       rpi:0.354948, class:'5A6A', record:'1-8'},
+  {name:'Roy',               rpi:0.271942, class:'5A6A', record:'1-6'},
+  {name:'West Jordan',       rpi:0.283978, class:'5A6A', record:'1-8'},
+  {name:'Cedar Valley',      rpi:0.248469, class:'5A6A', record:'0-7'},
+  {name:'Clearfield',        rpi:0.248234, class:'5A6A', record:'0-9'},
+  {name:'Judge Memorial Catholic', rpi:0.740194, class:'5A6A', record:'5-2'},
+  {name:'Riverton',          rpi:0.410000, class:'5A6A', record:''},
+  {name:'Juan Diego Catholic', rpi:14.1522, class:'4A', record:''},
+  {name:'Waterford',         rpi:9.9616,   class:'4A', record:''},
+  {name:'Sky View',          rpi:7.0682,   class:'4A', record:''},
+  {name:'Green Canyon',      rpi:6.4584,   class:'4A', record:''},
+  {name:'Ridgeline',         rpi:4.3078,   class:'4A', record:''},
+  {name:'Mountain Crest',    rpi:3.1298,   class:'4A', record:''},
+  {name:'Bear River',        rpi:1.2334,   class:'4A', record:''},
+  {name:'Timpanogos',        rpi:-0.3556,  class:'4A', record:''},
+  {name:'Provo',             rpi:-2.6532,  class:'4A', record:''},
+  {name:'Snow Canyon',       rpi:-2.7666,  class:'4A', record:''},
+  {name:'Dixie',             rpi:-3.8176,  class:'4A', record:''},
+  {name:'Jordan',            rpi:-6.1559,  class:'4A', record:''},
+  {name:'Crimson Cliffs',    rpi:-9.4272,  class:'4A', record:''},
+  {name:'Cedar',             rpi:-12.5524, class:'4A', record:''},
+  {name:'Hurricane',         rpi:-12.9791, class:'4A', record:''},
+  {name:'Canyon View',       rpi:-13.8511, class:'4A', record:''},
+  {name:'Pine View',         rpi:-16.5337, class:'4A', record:''},
+  {name:'Desert Hills',      rpi:-16.6919, class:'4A', record:''},
+  {name:'Orem',              rpi:-17.3487, class:'4A', record:''},
+  {name:'Logan',             rpi:-19.0673, class:'4A', record:''},
+  {name:'Mountain View',     rpi:-20.4944, class:'4A', record:''},
+  {name:'Highland',          rpi:-2.215,   class:'4A', record:''},
+];
+
+const rpi56Sorted=RPI_DATA.filter(r=>r.class==='5A6A').sort((a,b)=>b.rpi-a.rpi).map((r,i)=>({...r,rank:i+1}));
+const rpi4Sorted=RPI_DATA.filter(r=>r.class==='4A').sort((a,b)=>b.rpi-a.rpi).map((r,i)=>({...r,rank:i+1}));
+const RPI_ALL=[...rpi56Sorted,...rpi4Sorted];
+
+function getRPI(teamName) {
+  if (!teamName) return null;
+  const canonical=canonicalize(teamName);
+  const searches=[canonical,teamName].map(n=>n.toLowerCase().trim());
+  for (const tl of searches) {
+    let match=RPI_ALL.find(r=>r.name.toLowerCase()===tl); if(match)return match;
+    match=RPI_ALL.find(r=>tl.includes(r.name.toLowerCase())); if(match)return match;
+    const inputWords=tl.split(' ').filter(Boolean);
+    if(inputWords.length>=2){
+      match=RPI_ALL.find(r=>r.name.toLowerCase().startsWith(tl)); if(match)return match;
+      match=RPI_ALL.find(r=>{const rl=r.name.toLowerCase();return inputWords.every((w,i)=>rl.split(' ')[i]===w);});if(match)return match;
+    }
+    if(inputWords.length===1){const candidates=RPI_ALL.filter(r=>r.name.toLowerCase().split(' ')[0]===inputWords[0]);if(candidates.length===1)return candidates[0];}
+  }
+  return null;
+}
+function fmtRPI(r) { if(!r)return '—'; if(r.class==='5A6A')return r.rpi.toFixed(4); return (r.rpi>0?'+':'')+r.rpi.toFixed(4); }
+
+
+function canonicalize(name) {
+  if (!name) return '';
+  return name.toLowerCase()
+    .replace(/\bhs\b/g,'').replace(/\bhigh school\b/g,'').replace(/\bhigh\b/g,'')
+    .replace(/\bsilverwolves\b/g,'').replace(/\bwolves\b/g,'').replace(/\btigers\b/g,'')
+    .replace(/\brams\b/g,'').replace(/\beagles\b/g,'').replace(/\blonghorns\b/g,'')
+    .replace(/\bbees\b/g,'').replace(/\bbulldogs\b/g,'').replace(/\bknights\b/g,'')
+    .replace(/\bfalcons\b/g,'').replace(/\bjaguars\b/g,'').replace(/\bwarriors\b/g,'')
+    .replace(/\bdons\b/g,'').replace(/\btitans\b/g,'').replace(/\brebels\b/g,'')
+    .replace(/\bpatriots\b/g,'').replace(/\bspartans\b/g,'').replace(/\bpanthers\b/g,'')
+    .replace(/\bcougars\b/g,'').replace(/\bbroncos\b/g,'').replace(/\bmustangs\b/g,'')
+    .replace(/\bjets\b/g,'').replace(/\bpioneers\b/g,'').replace(/\bsentinels\b/g,'')
+    .replace(/\s+/g,' ').trim();
+}
+
+function loadOvr() { try { return JSON.parse(localStorage.getItem(OVR_KEY) || '{}'); } catch { return {}; } }
+function saveOvr(id, outcome, actual) { try { const m = loadOvr(); m[id] = {outcome, actual}; localStorage.setItem(OVR_KEY, JSON.stringify(m)); } catch(e) {} }
+function loadUser() { try { return JSON.parse(localStorage.getItem(USR_KEY) || '[]'); } catch { return []; } }
+function saveUser(g) { try { localStorage.setItem(USR_KEY, JSON.stringify(g)); } catch(e) {} }
+function loadHist() { try { return JSON.parse(localStorage.getItem(HIST_KEY) || '[]'); } catch { return []; } }
+function saveHist(g) { try { localStorage.setItem(HIST_KEY, JSON.stringify(g)); } catch(e) {} }
+function loadSchedule() { try { return JSON.parse(localStorage.getItem(SCHED_KEY) || '[]'); } catch { return []; } }
+function saveSchedule(g) { try { localStorage.setItem(SCHED_KEY, JSON.stringify(g)); } catch(e) {} }
+
+let preds = [];
+let activeFilt = 'all';
+let sortCol = 'name', sortDir = 'asc';
+let expandedTeam = null;
+
+function init() {
+  const ovr = loadOvr();
+  const usr = loadUser();
+  preds = usr.map(g => ({ ...g, outcome: ovr[g.id]?.outcome ?? g.outcome ?? 'pending', actualScore: ovr[g.id]?.actual ?? g.actualScore ?? '' }));
+  preds.sort((a,b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+  document.getElementById('fDate').value = new Date().toISOString().slice(0,10);
+  renderAll();
+  checkExtensionQueue();
+  setInterval(checkExtensionQueue, 5000);
+}
+
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
+  document.getElementById('tab-'+name).classList.add('on');
+  btn.classList.add('on');
+  if (name === 'database') renderDB();
+  if (name === 'rpi') renderRPI();
+}
+function tog(bId, cId) { document.getElementById(bId).classList.toggle('open'); document.getElementById(cId).classList.toggle('open'); }
+
+function savePred() {
+  const raw = document.getElementById('fPaste').value.trim();
+  const err = document.getElementById('parseErr');
+  err.classList.remove('show');
+  if (!raw) { err.textContent = 'Please paste the analysis text.'; err.classList.add('show'); return; }
+  const vsM = raw.match(/([A-Z][^\n]+?)\s+vs\.?\s+([A-Z][^\n]+?)(?:\s*[—–\-]|\s*\n)/i);
+  if (!vsM) { err.textContent = 'Could not detect team names.'; err.classList.add('show'); return; }
+  const teamA = vsM[1].replace(/^[#⚔️\s*_]+/,'').trim();
+  const teamB = vsM[2].replace(/[_*\s]+$/,'').trim();
+  const winM = raw.match(/PREDICTED WINNER[:\s*_]+(.+)/i);
+  const winner = winM ? winM[1].replace(/[*_]/g,'').trim() : teamA;
+  const winnerTeam = winner.toLowerCase().includes(teamB.split(' ')[0].toLowerCase()) ? 'B' : 'A';
+  let probA = 50;
+  const probM = raw.match(/Win Probability[^%\d]*?(\d+)%[^%\d]*?(\d+)%/i);
+  if (probM) {
+    const p1 = parseInt(probM[1]), p2 = parseInt(probM[2]);
+    const snippet = raw.substring(raw.toLowerCase().indexOf('win prob'), raw.toLowerCase().indexOf('win prob') + 120);
+    probA = snippet.toLowerCase().indexOf(teamA.split(' ')[0].toLowerCase()) < snippet.toLowerCase().indexOf(teamB.split(' ')[0].toLowerCase()) ? p1 : p2;
+    if (isNaN(probA)) probA = p1;
+  }
+  const scoreM = raw.match(/Projected Score[:\s]+(.+)/i);
+  const projectedScore = scoreM ? scoreM[1].replace(/[*_]/g,'').trim() : '';
+  const confM = raw.match(/Confidence[:\s*_]+(Very High|High|Moderate|Low)/i);
+  const confidence = confM ? confM[1] : 'Moderate';
+  const matchupM = raw.match(/Key Matchup Factors[\s\S]*?\n([\s\S]+?)(?:\n#{2,}|\n---|\*\*\*|Common Opponent|$)/i);
+  const matchup = matchupM ? matchupM[1].trim() : '';
+  const commonM = raw.match(/Common Opponent[\s\S]*?\n([\s\S]+?)(?:\n#{2,}|\n---|\*\*\*|Full Scouting|Scouting Report|$)/i);
+  const common = commonM ? commonM[1].trim() : '';
+  const repM = raw.match(/(?:Full Scouting Report|Scouting Report)[\s\S]*?\n([\s\S]+?)$/i);
+  const report = repM ? repM[1].trim() : '';
+  const g = { id:'game_'+Date.now(), date:document.getElementById('fDate').value||new Date().toISOString().slice(0,10), sport:SPORT_LABEL, teamA, teamB, winner, winnerTeam, probA, projectedScore, confidence, matchup, common, report, outcome:'pending', actualScore:'' };
+  const usr = loadUser(); usr.push(g); saveUser(usr);
+  preds.unshift(g);
+  preds.sort((a,b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+  document.getElementById('fPaste').value = '';
+  document.getElementById('addBody').classList.remove('open');
+  document.getElementById('addChev').classList.remove('open');
+  renderAll();
+}
+
+function setOutcome(id, outcome) {
+  const p = preds.find(x => x.id===id); if (!p) return;
+  p.outcome = outcome; saveOvr(id, outcome, p.actualScore||''); renderAll();
+}
+function saveActual(id) {
+  const v = document.getElementById('ai_'+id).value.trim();
+  const p = preds.find(x => x.id===id); if (!p) return;
+  p.actualScore = v; saveOvr(id, p.outcome||'pending', v); renderAll();
+}
+function delPred(id) {
+  if (!confirm('Delete this prediction?')) return;
+  preds = preds.filter(x => x.id!==id);
+  saveUser(loadUser().filter(g => g.id!==id));
+  renderAll();
+}
+function setF(f, btn) {
+  activeFilt = f;
+  document.querySelectorAll('.frow .fbtn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderP();
+}
+
+function parseScore(str, teamA, teamB) {
+  if (!str) return null;
+  const nums = str.match(/\d+/g);
+  if (!nums || nums.length < 2) return null;
+  const lo = str.toLowerCase();
+  const an = teamA.split(' ')[0].toLowerCase(), bn = teamB.split(' ')[0].toLowerCase();
+  const ai = lo.indexOf(an), bi = lo.indexOf(bn);
+  if (ai !== -1 && bi !== -1) {
+    const am = str.slice(ai).match(/\d+/), bm = str.slice(bi).match(/\d+/);
+    if (am && bm) return { a: parseInt(am[0]), b: parseInt(bm[0]) };
+  }
+  return { a: parseInt(nums[0]), b: parseInt(nums[1]) };
+}
+function scoreErrorForPred(p) {
+  if (!p.actualScore || !p.projectedScore) return null;
+  const actual = parseScore(p.actualScore, p.teamA, p.teamB);
+  const proj = parseScore(p.projectedScore, p.teamA, p.teamB);
+  if (!actual || !proj) return null;
+  return (Math.abs(actual.a - proj.a) + Math.abs(actual.b - proj.b)) / 2;
+}
+function avgScoreError() {
+  const errs = preds.map(scoreErrorForPred).filter(e => e !== null);
+  if (!errs.length) return null;
+  return errs.reduce((s,v) => s+v, 0) / errs.length;
+}
+function scoreErrBadge(p) {
+  const e = scoreErrorForPred(p);
+  if (e === null) return '';
+  const cls = e <= 2 ? 'score-err-great' : e <= 4 ? 'score-err-ok' : 'score-err-miss';
+  const label = e <= 2 ? '🎯' : e <= 4 ? '〜' : '✗';
+  return `<span class="score-err-badge ${cls}">${label} ±${e.toFixed(1)} goals/team</span>`;
+}
+function confClass(c) {
+  if (!c) return 'conf-moderate';
+  const cl = c.toLowerCase().replace(' ','');
+  if (cl==='low') return 'conf-low';
+  if (cl==='moderate') return 'conf-moderate';
+  if (cl==='high') return 'conf-high';
+  if (cl==='veryhigh') return 'conf-veryhigh';
+  return 'conf-moderate';
+}
+
+function renderAll() {
+  const total = preds.length;
+  const correct = preds.filter(p => p.outcome==='correct').length;
+  const wrong = preds.filter(p => p.outcome==='incorrect').length;
+  const pct = (correct+wrong)>0 ? Math.round(correct/(correct+wrong)*100)+'%' : '—';
+  const err = avgScoreError();
+  const hist = loadHist();
+  document.getElementById('tTotal').textContent = total;
+  document.getElementById('tCorrect').textContent = correct;
+  document.getElementById('tWrong').textContent = wrong;
+  document.getElementById('tPct').textContent = pct;
+  document.getElementById('tScoreAcc').textContent = err !== null ? '±'+err.toFixed(1) : '—';
+  document.getElementById('tHistCount').textContent = hist.length;
+  renderP();
+}
+
+function renderP() {
+  const q = (document.getElementById('pSearch').value||'').toLowerCase();
+  let list = preds.filter(p => {
+    if (activeFilt !== 'all' && p.outcome !== activeFilt) return false;
+    if (q && !p.teamA.toLowerCase().includes(q) && !p.teamB.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  const el = document.getElementById('pList');
+  if (!list.length) { el.innerHTML = `<div class="empty">🥍<br><br>${activeFilt==='all'?'No predictions yet.':'No '+activeFilt+' predictions.'}<br><span style="font-size:12px">Use the Generate Package button to build predictions from your schedule.</span></div>`; return; }
+  el.innerHTML = list.map(p => predCard(p)).join('');
+}
+
+function predCard(p) {
+  const d = p.date ? new Date(p.date+'T12:00:00') : null;
+  const day = d ? d.getDate() : '?';
+  const mon = d ? d.toLocaleDateString('en-US',{month:'short'}).toUpperCase() : '';
+  const probB = 100 - p.probA;
+  const se = scoreErrorForPred(p);
+  const isOpen = false;
+  return `<div class="pc ${p.outcome}" id="pc_${p.id}">
+    <div class="ptop" onclick="togCard('${p.id}')">
+      <div class="pdate-col"><div class="pdate-day">${day}</div><div class="pdate-mon">${mon}</div></div>
+      <div class="pmatch-col">
+        <div class="pteams-row"><span class="pteam-a">${x(p.teamA)}</span><span class="pvs-sep">VS</span><span class="pteam-b">${x(p.teamB)}</span></div>
+        <div class="prob-display">
+          <div class="prob-teams-row"><span class="prob-name a">${x(p.teamA.split(' ')[0])}</span><span class="prob-pct a">${p.probA}%</span></div>
+          <div class="prob-track"><div class="prob-fill-a" style="width:${p.probA}%"></div><div class="prob-fill-b" style="width:${probB}%"></div></div>
+          <div class="prob-teams-row"><span class="prob-name b">${x(p.teamB.split(' ')[0])}</span><span class="prob-pct b">${probB}%</span></div>
+        </div>
+      </div>
+      <div class="ppred-col">
+        <div class="ppred-lbl">Predicted Winner</div>
+        <div class="ppred-winner">${x(p.winner)}</div>
+        ${p.projectedScore?`<div class="ppred-score">${x(p.projectedScore)}</div>`:''}
+        <span class="ppred-conf ${confClass(p.confidence)}">${p.confidence||'Moderate'}</span>
+      </div>
+    </div>
+    <div class="pmeta-row">
+      ${p.actualScore?`<span class="actual-badge">Actual: <strong>${x(p.actualScore)}</strong></span>`:''}
+      ${scoreErrBadge(p)}
+      <span class="outcome-badge ob-${p.outcome}">${p.outcome.toUpperCase()}</span>
+      <span class="expand-hint">▾ details</span>
+    </div>
+    <div class="pdet" id="det_${p.id}">
+      <div class="dgrid">
+        ${p.matchup?`<div class="dblock"><div class="dtitle">Key Matchup Factors</div><div class="dbody">${x(p.matchup)}</div></div>`:''}
+        ${p.common?`<div class="dblock"><div class="dtitle">Common Opponents</div><div class="dbody">${x(p.common)}</div></div>`:''}
+      </div>
+      ${p.report?`<div class="dblock" style="margin-bottom:12px"><div class="dtitle">Scouting Report</div><div class="dbody">${x(p.report)}</div></div>`:''}
+      <div class="orrow">
+        <span class="olbl">Outcome:</span>
+        <div class="obtns">
+          <button class="obtn correct ${p.outcome==='correct'?'on':''}" onclick="setOutcome('${p.id}','correct')">✓ Correct</button>
+          <button class="obtn incorrect ${p.outcome==='incorrect'?'on':''}" onclick="setOutcome('${p.id}','incorrect')">✗ Incorrect</button>
+        </div>
+        <div class="arow">
+          <input class="ainp" id="ai_${p.id}" placeholder="Actual score..." value="${x(p.actualScore)}" />
+          <button class="asave" onclick="saveActual('${p.id}')">Save</button>
+        </div>
+        <button class="delbtn" onclick="delPred('${p.id}')">Delete</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function togCard(id) {
+  const det = document.getElementById('det_'+id);
+  if (det) det.classList.toggle('open');
+}
+
+// ── HISTORICAL IMPORT ──
+let pendingHist = [];
+function parseHistLine(line, year) {
+  line = line.trim();
+  if (!line || line.length < 5) return null;
+  let date = '';
+  const dateMatch = line.match(/^(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+(\d{1,2})\s*[\|\-]/i) || line.match(/^(\d{1,2})\/(\d{1,2})\s*[\|\-]/i);
+  if (dateMatch) {
+    if (dateMatch[0].match(/[a-z]/i)) {
+      const months = {jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',jul:'07',aug:'08',sep:'09',oct:'10',nov:'11',dec:'12'};
+      const m = months[dateMatch[1].toLowerCase()]; const d = dateMatch[2].padStart(2,'0');
+      date = `${year}-${m}-${d}`;
+    } else { date = `${year}-${dateMatch[1].padStart(2,'0')}-${dateMatch[2].padStart(2,'0')}`; }
+    line = line.slice(dateMatch[0].length).trim();
+  }
+  const scorePattern = /^(.+?)\s+(\d+)\s*(?:@|vs\.?|–|—|-{1,2})\s*(.+?)\s+(\d+)(?:\s*\(OT\))?$/i;
+  const m = line.match(scorePattern);
+  if (!m) return null;
+  const teamA = m[1].trim(), scoreA = parseInt(m[2]), teamB = m[3].trim(), scoreB = parseInt(m[4]);
+  if (!teamA || !teamB || isNaN(scoreA) || isNaN(scoreB) || teamA.length < 2 || teamB.length < 2) return null;
+  const winner = scoreA > scoreB ? teamA : scoreB > scoreA ? teamB : null;
+  return { teamA, scoreA, teamB, scoreB, winner, date, actualScore: `${teamA} ${scoreA} – ${teamB} ${scoreB}` };
+}
+function previewHist() {
+  const raw = document.getElementById('histPaste').value.trim();
+  const year = document.getElementById('histYear').value.trim() || '2026';
+  const errEl = document.getElementById('histErr');
+  errEl.classList.remove('show');
+  if (!raw) { errEl.textContent = 'Please paste some results first.'; errEl.classList.add('show'); return; }
+  pendingHist = [];
+  const failed = [];
+  for (const line of raw.split('\n')) {
+    const parsed = parseHistLine(line, year);
+    if (parsed) pendingHist.push(parsed);
+    else if (line.trim().length > 3) failed.push(line.trim());
+  }
+  const preview = document.getElementById('histPreview');
+  preview.style.display = 'block';
+  if (!pendingHist.length) { preview.innerHTML = '<span style="color:var(--red)">❌ No games parsed.</span>'; document.getElementById('histConfirmBtn').style.display='none'; return; }
+  let html = `<span style="color:var(--green);font-weight:700">✓ ${pendingHist.length} game${pendingHist.length!==1?'s':''} ready</span>${failed.length?` | <span style="color:var(--red)">${failed.length} skipped</span>`:''}<br><br>`;
+  html += pendingHist.map(g=>`<span style="color:var(--text)">${g.date||'no date'}</span> &nbsp; <span style="color:var(--accent)">${x(g.teamA)} ${g.scoreA}</span> – <span style="color:var(--red)">${g.scoreB} ${x(g.teamB)}</span>`).join('<br>');
+  preview.innerHTML = html;
+  document.getElementById('histConfirmBtn').style.display='block';
+}
+function confirmHist() {
+  if (!pendingHist.length) return;
+  const existing = loadHist();
+  const existingKeys = new Set(existing.map(g=>`${g.teamA}|${g.teamB}|${g.date}`));
+  let added = 0;
+  for (const g of pendingHist) {
+    const key = `${g.teamA}|${g.teamB}|${g.date}`;
+    if (!existingKeys.has(key)) { existing.push({...g, id:'hist_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), type:'historical'}); existingKeys.add(key); added++; }
+  }
+  saveHist(existing);
+  document.getElementById('histPaste').value='';
+  document.getElementById('histPreview').style.display='none';
+  document.getElementById('histConfirmBtn').style.display='none';
+  document.getElementById('histBody').classList.remove('open');
+  document.getElementById('histChev').classList.remove('open');
+  pendingHist=[];
+  const errEl=document.getElementById('histErr');
+  errEl.style.background='var(--green-light)'; errEl.style.borderColor='#86efac'; errEl.style.color='var(--green)';
+  errEl.textContent=`✓ ${added} result${added!==1?'s':''} imported.`; errEl.classList.add('show');
+  setTimeout(()=>{errEl.classList.remove('show');errEl.style='';},4000);
+  renderAll();
+  if(document.getElementById('tab-database').classList.contains('on')) renderDB();
+}
+
+// ── GENERATE PREDICTIONS PACKAGE ──
+function generatePackage() {
+  const schedule = loadSchedule();
+  const hist = loadHist();
+  const today = new Date().toISOString().slice(0,10);
+
+  // Get upcoming games (not yet played)
+  const upcoming = schedule.filter(g => g.date >= today);
+  if (!upcoming.length) {
+    document.getElementById('pkgOutput').textContent = 'No upcoming games in schedule. Import a schedule via the extension first.';
+    document.getElementById('pkgOutput').classList.add('show');
+    document.getElementById('pkgCopyBtn').style.display = 'none';
+    return;
+  }
+
+  // Build team stats from historical results
+  const teamStats = {};
+  function ensureTeam(name) {
+    if (!teamStats[name]) teamStats[name] = { name, gf:[], ga:[], wins:0, losses:0, opponents:[] };
+  }
+  for (const g of hist) {
+    ensureTeam(g.teamA); ensureTeam(g.teamB);
+    teamStats[g.teamA].gf.push(g.scoreA); teamStats[g.teamA].ga.push(g.scoreB);
+    teamStats[g.teamB].gf.push(g.scoreB); teamStats[g.teamB].ga.push(g.scoreA);
+    if (g.scoreA > g.scoreB) { teamStats[g.teamA].wins++; teamStats[g.teamB].losses++; }
+    else if (g.scoreB > g.scoreA) { teamStats[g.teamB].wins++; teamStats[g.teamA].losses++; }
+    teamStats[g.teamA].opponents.push({ opp: g.teamB, gf: g.scoreA, ga: g.scoreB, date: g.date });
+    teamStats[g.teamB].opponents.push({ opp: g.teamA, gf: g.scoreB, ga: g.scoreA, date: g.date });
+  }
+
+  const avg = arr => arr.length ? (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1) : 'N/A';
+
+  function teamSummary(name) {
+    const s = teamStats[name];
+    const rpi = getRPI(name);
+    if (!s) return `${name}: No data yet.`;
+    const rec = `${s.wins}W-${s.losses}L`;
+    const rpiStr = rpi ? `RPI: #${rpi.rank} (${fmtRPI(rpi)}, ${rpi.class})` : 'RPI: Not ranked';
+    const oppSummary = s.opponents.slice(-5).map(o=>`  ${o.opp}: ${o.gf}-${o.ga} (${o.date})`).join('\n');
+    return `${name} | ${rec} | GF/G: ${avg(s.gf)} | GA/G: ${avg(s.ga)} | ${rpiStr}\nRecent games:\n${oppSummary||'  None'}`;
+  }
+
+  // Find common opponents
+  function commonOpponents(nameA, nameB) {
+    const sA = teamStats[nameA], sB = teamStats[nameB];
+    if (!sA || !sB) return '';
+    const oppsA = new Map(sA.opponents.map(o=>[o.opp, o]));
+    const shared = sB.opponents.filter(o => oppsA.has(o.opp));
+    if (!shared.length) return 'No common opponents yet.';
+    return shared.map(ob => {
+      const oa = oppsA.get(ob.opp);
+      return `  vs ${ob.opp}: ${nameA} ${oa.gf}-${oa.ga} | ${nameB} ${ob.gf}-${ob.ga}`;
+    }).join('\n');
+  }
+
+  let pkg = `LAX SCOUT — ${GENDER.toUpperCase()} PREDICTION REQUEST\nGenerated: ${new Date().toLocaleDateString()}\nSport: ${SPORT_LABEL}\n`;
+  pkg += `\n====================================================\n`;
+  pkg += `UPCOMING GAMES (${upcoming.length})\n`;
+  pkg += `====================================================\n\n`;
+
+  for (const g of upcoming) {
+    pkg += `GAME: ${g.homeTeam} vs ${g.opponent}\n`;
+    pkg += `Date: ${g.date}\n\n`;
+    pkg += `--- ${g.homeTeam} ---\n${teamSummary(g.homeTeam)}\n\n`;
+    pkg += `--- ${g.opponent} ---\n${teamSummary(g.opponent)}\n\n`;
+    pkg += `Common opponents:\n${commonOpponents(g.homeTeam, g.opponent)}\n`;
+    pkg += `\n----------------------------------------------------\n\n`;
+  }
+
+  pkg += `====================================================\nINSTRUCTIONS FOR CLAUDE:\n====================================================\n`;
+  pkg += `For each game above, provide a structured prediction in this exact format:\n\n`;
+  pkg += `## [Team A] vs [Team B]\nPREDICTED WINNER: [Team Name]\nWin Probability: [Team A] XX% — [Team B] XX%\nProjected Score: [Team A] X — [Team B] X\nConfidence: [Low/Moderate/High/Very High]\n\n**Key Matchup Factors**\n[bullet points]\n\n**Common Opponents**\n[analysis]\n\n**Scouting Report**\n[2-3 paragraph analysis]\n\n---\n`;
+
+  document.getElementById('pkgOutput').textContent = pkg;
+  document.getElementById('pkgOutput').classList.add('show');
+  document.getElementById('pkgCopyBtn').style.display = 'block';
+}
+
+function copyPackage() {
+  const text = document.getElementById('pkgOutput').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('pkgCopyBtn');
+    btn.textContent = '✓ COPIED!';
+    setTimeout(() => btn.textContent = 'COPY TO CLIPBOARD', 2000);
+  });
+}
+
+function importPredictions() {
+  const raw = document.getElementById('pkgPaste').value.trim();
+  if (!raw) return;
+  // Split on game separators and parse each prediction block
+  const blocks = raw.split(/\n---+\n/).filter(b => b.trim() && b.includes('PREDICTED WINNER'));
+  let added = 0;
+  const usr = loadUser();
+  const date = document.getElementById('pkgDate').value || new Date().toISOString().slice(0,10);
+  for (const block of blocks) {
+    const vsM = block.match(/##\s*([^\n]+?)\s+vs\.?\s+([^\n]+)/i);
+    if (!vsM) continue;
+    const teamA = vsM[1].trim(), teamB = vsM[2].trim();
+    const winM = block.match(/PREDICTED WINNER:\s*(.+)/i);
+    const winner = winM ? winM[1].trim() : teamA;
+    const winnerTeam = winner.toLowerCase().includes(teamB.split(' ')[0].toLowerCase()) ? 'B' : 'A';
+    let probA = 50;
+    const probM = block.match(/Win Probability[^%\d]*(\d+)%[^%\d]*(\d+)%/i);
+    if (probM) { probA = parseInt(probM[1]); }
+    const scoreM = block.match(/Projected Score:\s*(.+)/i);
+    const projectedScore = scoreM ? scoreM[1].trim() : '';
+    const confM = block.match(/Confidence:\s*(Very High|High|Moderate|Low)/i);
+    const confidence = confM ? confM[1] : 'Moderate';
+    const matchupM = block.match(/Key Matchup Factors[\s\S]*?\n([\s\S]+?)(?:\n\*\*|\n---|$)/i);
+    const matchup = matchupM ? matchupM[1].trim() : '';
+    const commonM = block.match(/Common Opponents[\s\S]*?\n([\s\S]+?)(?:\n\*\*|\n---|$)/i);
+    const common = commonM ? commonM[1].trim() : '';
+    const repM = block.match(/Scouting Report[\s\S]*?\n([\s\S]+?)(?:\n---|$)/i);
+    const report = repM ? repM[1].trim() : '';
+    const g = { id:'game_'+Date.now()+'_'+Math.random().toString(36).slice(2,5), date, sport:SPORT_LABEL, teamA, teamB, winner, winnerTeam, probA, projectedScore, confidence, matchup, common, report, outcome:'pending', actualScore:'' };
+    usr.push(g); preds.unshift(g); added++;
+  }
+  saveUser(usr);
+  preds.sort((a,b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+  document.getElementById('pkgPaste').value = '';
+  document.getElementById('pkgBody').classList.remove('open');
+  document.getElementById('pkgChev').classList.remove('open');
+  renderAll();
+  alert(`✓ ${added} prediction${added!==1?'s':''} imported!`);
+}
+
+// ── TEAM DATABASE ──
+function buildDB() {
+  const teams = {};
+  function addTeam(name, opp, gf, ga, date, type) {
+    const k = canonicalize(name) || name;
+    if (!teams[k]) teams[k] = { name, correct:0, incorrect:0, pending:0, preds:0, predW:0, predL:0, gf:[], ga:[], scoreErrs:[], history:[], histWins:0, histLosses:0 };
+    const t = teams[k];
+    if (type === 'historical') {
+      t.gf.push(gf); t.ga.push(ga);
+      if (gf > ga) t.histWins++; else if (ga > gf) t.histLosses++;
+      t.history.push({ opp, date, actual: `${name} ${gf} – ${opp} ${ga}`, type:'historical' });
+    }
+  }
+  for (const p of preds) {
+    const ta = canonicalize(p.teamA)||p.teamA, tb = canonicalize(p.teamB)||p.teamB;
+    for (const [key, side] of [[ta,'A'],[tb,'B']]) {
+      if (!teams[key]) teams[key] = { name: side==='A'?p.teamA:p.teamB, correct:0, incorrect:0, pending:0, preds:0, predW:0, predL:0, gf:[], ga:[], scoreErrs:[], history:[], histWins:0, histLosses:0 };
+      const t = teams[key];
+      t.preds++;
+      const pw = p.winnerTeam === side;
+      if (pw) t.predW++; else t.predL++;
+      if (p.outcome==='correct') t.correct++; else if (p.outcome==='incorrect') t.incorrect++; else t.pending++;
+      if (p.actualScore) {
+        const nums = p.actualScore.match(/\d+/g);
+        if (nums && nums.length >= 2) {
+          let gfv=NaN, gav=NaN;
+          const lo = p.actualScore.toLowerCase();
+          const an=p.teamA.split(' ')[0].toLowerCase(), bn=p.teamB.split(' ')[0].toLowerCase();
+          const ai=lo.indexOf(an), bi=lo.indexOf(bn);
+          if (ai!==-1&&bi!==-1) { const am=p.actualScore.slice(ai).match(/\d+/),bm=p.actualScore.slice(bi).match(/\d+/); if(am&&bm){side==='A'?(gfv=parseInt(am[0]),gav=parseInt(bm[0])):(gfv=parseInt(bm[0]),gav=parseInt(am[0]));} }
+          else { side==='A'?(gfv=parseInt(nums[0]),gav=parseInt(nums[1])):(gfv=parseInt(nums[1]),gav=parseInt(nums[0])); }
+          if (!isNaN(gfv)) t.gf.push(gfv);
+          if (!isNaN(gav)) t.ga.push(gav);
+        }
+      }
+      const se = scoreErrorForPred(p);
+      if (se !== null) t.scoreErrs.push(se);
+      const opp = side==='A'?p.teamB:p.teamA;
+      t.history.push({ opp, date:p.date, pw, outcome:p.outcome, actual:p.actualScore, proj:p.projectedScore, conf:p.confidence, scoreErr:se, type:'predicted' });
+    }
+  }
+  const hist = loadHist();
+  for (const g of hist) {
+    addTeam(canonicalize(g.teamA)||g.teamA, g.teamB, g.scoreA, g.scoreB, g.date, 'historical');
+    addTeam(canonicalize(g.teamB)||g.teamB, g.teamA, g.scoreB, g.scoreA, g.date, 'historical');
+  }
+  return teams;
+}
+
+function renderDB() {
+  const q = (document.getElementById('dbSearch').value||'').toLowerCase();
+  const teams = buildDB();
+  let list = Object.values(teams).filter(t => !q || t.name.toLowerCase().includes(q));
+  document.getElementById('dbCnt').textContent = list.length + ' team'+(list.length!==1?'s':'');
+  if (!list.length) { document.getElementById('dbWrap').innerHTML=`<div class="empty">No team data yet.</div>`; return; }
+  list.sort((a,b) => {
+    let va, vb;
+    if (sortCol==='name') { va=a.name; vb=b.name; }
+    else if (sortCol==='preds') { va=a.preds; vb=b.preds; }
+    else if (sortCol==='acc') { va=acc(a)??-1; vb=acc(b)??-1; }
+    else if (sortCol==='scoreacc') { va=avgArr(a.scoreErrs)??999; vb=avgArr(b.scoreErrs)??999; }
+    else if (sortCol==='rpi') { va=getRPI(a.name)?.rpi??-999; vb=getRPI(b.name)?.rpi??-999; }
+    else if (sortCol==='gf') { va=avg(a.gf); vb=avg(b.gf); }
+    else if (sortCol==='ga') { va=avg(a.ga); vb=avg(b.ga); }
+    else if (sortCol==='diff') { va=avg(a.gf)-avg(a.ga); vb=avg(b.gf)-avg(b.ga); }
+    if (typeof va==='string') return sortDir==='asc'?va.localeCompare(vb):vb.localeCompare(va);
+    return sortDir==='asc'?va-vb:vb-va;
+  });
+  const cols = [{k:'name',l:'Team'},{k:'rpi',l:'RPI'},{k:'preds',l:'Predicted'},{k:'acc',l:'Win Acc'},{k:'scoreacc',l:'Score Err'},{k:'gf',l:'Avg GF'},{k:'ga',l:'Avg GA'},{k:'diff',l:'Diff'},{k:'rec',l:'Record'}];
+  const ths = cols.map(c => { const cl=c.k===sortCol?(sortDir==='asc'?'sasc':'sdsc'):''; return `<th class="${cl}" onclick="srtDB('${c.k}')">${c.l}</th>`; }).join('');
+  let rows = '';
+  for (const t of list) {
+    const a2=acc(t), gf=avg(t.gf), ga=avg(t.ga), diff=gf-ga;
+    const diffStr=diff>0?'+'+diff.toFixed(1):diff.toFixed(1);
+    const dcl=diff>0?'gcol':diff<0?'rcol':'ncol';
+    const rcl=t.predW>t.predL?'rpg':t.predW<t.predL?'rpb':'rpn';
+    const accHTML=a2===null?`<span style="color:var(--dim);font-size:11px">—</span>`:`<div class="accbar-wrap"><div class="accbar"><div class="accfill" style="width:${a2}%;background:${a2>=60?'var(--green)':a2>=40?'var(--gold)':'var(--red)'}"></div></div><span style="color:${a2>=60?'var(--green)':a2>=40?'var(--gold)':'var(--red)'}">${a2}%</span></div>`;
+    const se=avgArr(t.scoreErrs);
+    const seHTML=se===null?`<span style="color:var(--dim);font-size:11px">—</span>`:`<span class="score-err-badge ${se<=2?'score-err-great':se<=4?'score-err-ok':'score-err-miss'}">±${se.toFixed(1)}</span>`;
+    const pend=t.pending>0?`<span style="color:var(--gold);font-size:9px;font-family:'DM Mono',monospace;margin-left:4px">(${t.pending} pending)</span>`:'';
+    const gfH=gf>0?`<span class="mono">${gf.toFixed(1)}</span>`:`<span style="color:var(--dim);font-size:11px">—</span>`;
+    const gaH=ga>0?`<span class="mono">${ga.toFixed(1)}</span>`:`<span style="color:var(--dim);font-size:11px">—</span>`;
+    const safeId=t.name.replace(/[^a-zA-Z0-9]/g,'_');
+    const isExp=expandedTeam===t.name;
+    const tr=getRPI(t.name);
+    const rpiCell=tr?`<span style="font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:${tr.rpi>(tr.class==='5A6A'?0.6:5)?'var(--green)':tr.rpi>(tr.class==='5A6A'?0.45:0)?'var(--accent)':'var(--red)'}">#${tr.rank} <span style="font-weight:400;font-size:10px">${fmtRPI(tr)}</span></span> <span class="class-badge ${tr.class==='5A6A'?'badge-5a6a':'badge-4a'}" style="font-size:8px">${tr.class}</span>`:`<span style="color:var(--dim);font-size:11px">—</span>`;
+    const histRec=(t.histWins||0)+(t.histLosses||0)>0?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--dim);margin-top:2px">${t.histWins||0}W-${t.histLosses||0}L historical</div>`:'';
+    rows+=`<tr class="trow" onclick="togTeam('${x(t.name)}')"><td class="tcell">${x(t.name)}</td><td>${rpiCell}</td><td><span class="mono">${t.preds}</span>${pend}</td><td>${accHTML}</td><td>${seHTML}</td><td>${gfH}</td><td>${gaH}</td><td class="${dcl} mono">${gf>0||ga>0?diffStr:'—'}</td><td><span class="rpill ${rcl}">${t.predW}W ${t.predL}L</span>${histRec}</td></tr>
+    <tr class="tdetrow ${isExp?'open':''}" id="tdr_${safeId}"><td colspan="9">${teamDetHTML(t)}</td></tr>`;
+  }
+  document.getElementById('dbWrap').innerHTML=`<table class="dbtbl"><thead><tr>${ths}</tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function teamDetHTML(t) {
+  if (!t.history.length) return '<div style="color:var(--dim);font-size:12px;padding:4px 0">No game history yet.</div>';
+  const sorted=[...t.history].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  return `<div class="h2hgrid">`+sorted.map(h => {
+    if (h.type==='historical') {
+      const ds=h.date?new Date(h.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'';
+      return `<div class="h2hitem" style="border-left:3px solid var(--green);"><div style="font-weight:700;color:var(--text);margin-bottom:2px">${x(h.opp)}</div><div style="font-size:10px;color:var(--dim)">${ds}</div><div style="font-size:11px;color:var(--mid);margin-top:3px">${x(h.actual||'')}</div><div style="color:var(--green);font-size:9px;margin-top:3px;font-weight:600;font-family:'DM Mono',monospace;letter-spacing:1px">HISTORICAL</div></div>`;
+    }
+    const oc=h.outcome==='correct'?'var(--green)':h.outcome==='incorrect'?'var(--red)':'var(--gold)';
+    const ds=h.date?new Date(h.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'';
+    return `<div class="h2hitem" style="border-left:3px solid ${oc};"><div style="font-weight:700;color:var(--text);margin-bottom:2px">${x(h.opp)}</div><div style="font-size:10px;color:var(--dim)">${ds}${h.conf?' · '+h.conf+' conf':''}</div><div style="margin-top:3px;font-size:12px">${h.pw?'📈 Predicted WIN':'📉 Predicted LOSS'}</div>${h.proj?`<div style="font-size:10px;color:var(--dim);margin-top:1px">Proj: ${x(h.proj)}</div>`:''} ${h.actual?`<div style="font-size:10px;color:var(--mid)">Actual: ${x(h.actual)}</div>`:''} ${h.scoreErr!=null?`<div style="font-size:10px;color:${h.scoreErr<=2?'var(--green)':h.scoreErr<=4?'var(--gold)':'var(--red)'}">Score err: ±${h.scoreErr.toFixed(1)}</div>`:''}<div style="color:${oc};font-size:9px;margin-top:2px;font-weight:600;letter-spacing:1px;font-family:'DM Mono',monospace">${h.outcome.toUpperCase()}</div></div>`;
+  }).join('')+'</div>';
+}
+
+function togTeam(name) { expandedTeam=expandedTeam===name?null:name; renderDB(); }
+function srtDB(col) { sortDir=sortCol===col?(sortDir==='asc'?'desc':'asc'):'desc'; sortCol=col; if(col==='name')sortDir='asc'; renderDB(); }
+function avg(a) { return (!a||!a.length)?0:a.reduce((s,v)=>s+v,0)/a.length; }
+function avgArr(a) { return (!a||!a.length)?null:a.reduce((s,v)=>s+v,0)/a.length; }
+function acc(t) { const g=t.correct+t.incorrect; return g?Math.round(t.correct/g*100):null; }
+function x(s) { return s?String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'):''; }
+
+// ── RPI ──
+let rpiClass='all', rpiSortCol='rank', rpiSortDir='asc';
+function setRpiClass(cls,btn) { rpiClass=cls; document.querySelectorAll('.rpi-class-toggle .fbtn').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); renderRPI(); }
+function renderRPI() {
+  const q=(document.getElementById('rpiSearch').value||'').toLowerCase();
+  let list=RPI_ALL.filter(r=>{ if(rpiClass==='5A6A'&&r.class!=='5A6A')return false; if(rpiClass==='4A'&&r.class!=='4A')return false; if(q&&!r.name.toLowerCase().includes(q))return false; return true; });
+  list=[...list].sort((a,b)=>{ let va,vb; if(rpiSortCol==='rank'){va=a.rank+(a.class==='4A'?1000:0);vb=b.rank+(b.class==='4A'?1000:0);}else if(rpiSortCol==='name'){va=a.name;vb=b.name;}else if(rpiSortCol==='rpi'){va=a.rpi;vb=b.rpi;} if(typeof va==='string')return rpiSortDir==='asc'?va.localeCompare(vb):vb.localeCompare(va); return rpiSortDir==='asc'?va-vb:vb-va; });
+  if(!list.length){document.getElementById('rpiWrap').innerHTML='<div class="empty">No teams found.</div>';return;}
+  const max56=Math.max(...RPI_ALL.filter(r=>r.class==='5A6A').map(r=>r.rpi));
+  const max4=Math.max(...RPI_ALL.filter(r=>r.class==='4A').map(r=>r.rpi));
+  const min4=Math.min(...RPI_ALL.filter(r=>r.class==='4A').map(r=>r.rpi));
+  const range4=max4-min4;
+  const cols=[{k:'rank',l:'Rank'},{k:'name',l:'Team'},{k:'rpi',l:'RPI'}];
+  const ths=cols.map(c=>{const cl=rpiSortCol===c.k?(rpiSortDir==='asc'?'sasc':'sdsc'):'';return `<th class="${cl}" onclick="srtRPI('${c.k}')">${c.l}</th>`;}).join('')+'<th>Class</th><th>RPI Bar</th>';
+  const rows=list.map(r=>{
+    const rankCl=r.rank<=3?'top3':r.rank<=10?'top10':'';
+    let barPct,barColor;
+    if(r.class==='5A6A'){barPct=Math.max(4,Math.round((r.rpi/max56)*100));barColor=r.rpi>0.6?'var(--green)':r.rpi>0.45?'var(--accent)':'var(--red)';}
+    else{barPct=Math.max(4,Math.round(((r.rpi-min4)/range4)*100));barColor=r.rpi>5?'var(--green)':r.rpi>0?'var(--accent)':'var(--red)';}
+    const valColor=r.class==='5A6A'?(r.rpi>0.6?'var(--green)':r.rpi>0.45?'var(--accent)':'var(--red)'):(r.rpi>5?'var(--green)':r.rpi>0?'var(--accent)':'var(--red)');
+    return `<tr><td><span class="rpi-rank ${rankCl}">#${r.rank}</span></td><td style="font-weight:600">${x(r.name)}</td><td><span class="rpi-val" style="color:${valColor}">${fmtRPI(r)}</span></td><td><span class="class-badge ${r.class==='5A6A'?'badge-5a6a':'badge-4a'}">${r.class}</span></td><td><div class="rpi-bar-wrap"><div class="rpi-bar" style="width:${barPct}%;background:${barColor}"></div></div></td></tr>`;
+  }).join('');
+  document.getElementById('rpiWrap').innerHTML=`<table class="rpi-tbl"><thead><tr>${ths}</tr></thead><tbody>${rows}</tbody></table>`;
+}
+function srtRPI(col){rpiSortDir=rpiSortCol===col?(rpiSortDir==='asc'?'desc':'asc'):'desc';rpiSortCol=col;if(col==='rank')rpiSortDir='asc';renderRPI();}
+
+// ── EXTENSION IMPORT ──
+const EXT_ID = localStorage.getItem('laxscout_ext_id') || '';
+function checkExtensionQueue() {
+  if (!EXT_ID) { updateExtUI(null, true); return; }
+  try {
+    chrome.runtime.sendMessage(EXT_ID, { action: 'getQueue', gender: GENDER }, (resp) => {
+      if (chrome.runtime.lastError || !resp) { updateExtUI(null); return; }
+      updateExtUI(resp.queue);
+    });
+  } catch(e) { updateExtUI(null); }
+}
+function setExtId(id) { const c=id.trim(); if(c){localStorage.setItem('laxscout_ext_id',c);location.reload();} }
+function updateExtUI(queue, needsId) {
+  const results=queue?.results||[], schedule=queue?.schedule||[], total=results.length+schedule.length;
+  const badge=document.getElementById('extBadge'), pulse=document.getElementById('extPulse');
+  const noData=document.getElementById('extNoData'), hasData=document.getElementById('extHasData');
+  const gameList=document.getElementById('extGameList');
+  if (needsId) {
+    badge.classList.remove('show'); pulse.classList.remove('has-data'); hasData.style.display='none'; noData.style.display='block';
+    noData.innerHTML=`<div style="margin-bottom:10px;">Paste your <strong>Extension ID</strong> to connect LAX SCOUT to the MaxPreps scraper.</div><div style="font-size:11px;color:var(--dim);margin-bottom:8px;">Find it at <code style="background:rgba(0,102,255,0.1);color:#93c5fd;padding:1px 5px;border-radius:3px;">chrome://extensions</code> under "LAX SCOUT — MaxPreps Importer".</div><div style="display:flex;gap:8px;margin-top:8px;"><input id="extIdInput" placeholder="e.g. abcdefghijklmnop..." style="flex:1;background:#1e293b;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-family:'DM Mono',monospace;font-size:11px;padding:7px 10px;outline:none;" /><button onclick="setExtId(document.getElementById('extIdInput').value)" style="background:var(--accent);border:none;border-radius:6px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;padding:7px 14px;cursor:pointer;">CONNECT</button></div>`;
+    return;
+  }
+  if (total > 0) {
+    badge.textContent=total+' game'+(total!==1?'s':'')+' ready'; badge.classList.add('show'); pulse.classList.add('has-data');
+    noData.style.display='none'; hasData.style.display='block';
+    const allGames=[...results.map(g=>({...g,_kind:'result'})),...schedule.map(g=>({...g,_kind:'upcoming'}))].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    gameList.innerHTML=allGames.map(g=>{
+      const isWin=g._kind==='result'&&g.winner===g.homeTeam;
+      const dotCls=g._kind==='upcoming'?'upcoming':isWin?'win':'loss';
+      const dateStr=g.date?new Date(g.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'';
+      const score=g._kind==='result'?`${g.homeScore??'?'}–${g.oppScore??'?'}`:'Upcoming';
+      const teams=g.homeTeam&&g.opponent?`${x(g.homeTeam)} vs ${x(g.opponent)}`:x(g.opponent||'');
+      return `<div class="ext-game-row"><div class="ext-game-dot ${dotCls}"></div><div class="ext-game-teams">${teams}</div><div class="ext-game-score">${score}</div><div class="ext-game-date">${dateStr}</div></div>`;
+    }).join('');
+  } else {
+    badge.classList.remove('show'); pulse.classList.remove('has-data'); noData.style.display='block'; hasData.style.display='none';
+    if (!needsId) noData.innerHTML='No games in queue. Scrape a MaxPreps page and click Save to Queue in the extension.';
+  }
+}
+function importFromExtension() {
+  if (!EXT_ID) return;
+  try {
+    chrome.runtime.sendMessage(EXT_ID, { action: 'getQueue', gender: GENDER }, (resp) => {
+      if (chrome.runtime.lastError || !resp?.queue) return;
+      _doImport(resp.queue);
+    });
+  } catch(e) { alert('Import error: '+e.message); }
+}
+function _doImport(queue) {
+  try {
+    const results=queue.results||[], schedule=queue.schedule||[];
+    const existingHist=loadHist();
+    const existingSched=loadSchedule();
+    const histKeys=new Set(existingHist.map(g=>`${g.teamA}|${g.teamB}|${g.date}`));
+    const schedKeys=new Set(existingSched.map(g=>`${g.homeTeam}|${g.opponent}|${g.date}`));
+    let addedHist=0, addedSched=0;
+    for (const g of results) {
+      const key=`${g.homeTeam}|${g.opponent}|${g.date}`;
+      if (!histKeys.has(key)&&g.homeTeam&&g.opponent) {
+        existingHist.push({id:'ext_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),type:'historical',teamA:g.homeTeam,teamB:g.opponent,scoreA:g.homeScore??0,scoreB:g.oppScore??0,winner:g.homeScore>g.oppScore?g.homeTeam:g.opponent,date:g.date,actualScore:`${g.homeTeam} ${g.homeScore??0} – ${g.opponent} ${g.oppScore??0}`});
+        histKeys.add(key); addedHist++;
+      }
+    }
+    for (const g of schedule) {
+      const key=`${g.homeTeam}|${g.opponent}|${g.date}`;
+      if (!schedKeys.has(key)&&g.homeTeam&&g.opponent) { existingSched.push(g); schedKeys.add(key); addedSched++; }
+    }
+    saveHist(existingHist); saveSchedule(existingSched);
+    chrome.runtime.sendMessage(EXT_ID, { action: 'clearQueue' }, ()=>{});
+    const succ=document.getElementById('extSuccess');
+    succ.textContent=`✓ ${addedHist} result${addedHist!==1?'s':''} + ${addedSched} upcoming game${addedSched!==1?'s':''} imported.`;
+    succ.classList.add('show'); setTimeout(()=>succ.classList.remove('show'),3500);
+    updateExtUI(null); renderAll();
+    if(document.getElementById('tab-database').classList.contains('on')) renderDB();
+  } catch(e) { alert('Import error: '+e.message); }
+}
+function clearExtQueue() {
+  if (!confirm('Clear the extension queue?')) return;
+  if (!EXT_ID) return;
+  try { chrome.runtime.sendMessage(EXT_ID,{action:'clearQueue'},()=>updateExtUI(null)); } catch(e) { updateExtUI(null); }
+}
+
+init();
+
+</script>
+</body>
+</html>
