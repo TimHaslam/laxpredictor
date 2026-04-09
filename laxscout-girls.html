@@ -950,8 +950,18 @@ function generatePackage() {
   }
 
   pkg += `====================================================\nINSTRUCTIONS FOR CLAUDE:\n====================================================\n`;
-  pkg += `For each game above, provide a structured prediction in this exact format:\n\n`;
-  pkg += `## [Team A] vs [Team B]\nPREDICTED WINNER: [Team Name]\nWin Probability: [Team A] XX% — [Team B] XX%\nProjected Score: [Team A] X — [Team B] X\nConfidence: [Low/Moderate/High/Very High]\n\n**Key Matchup Factors**\n[bullet points]\n\n**Common Opponents**\n[analysis]\n\n**Scouting Report**\n[2-3 paragraph analysis]\n\n---\n`;
+  pkg += `For EACH game listed above, respond with one prediction block using EXACTLY this format (replace angle-bracket placeholders with real values):\n\n`;
+  for (const g of upcoming) {
+    pkg += `## ${g.homeTeam} vs ${g.opponent}\n`;
+    pkg += `PREDICTED WINNER: <Team Name>\n`;
+    pkg += `Win Probability: ${g.homeTeam} XX% — ${g.opponent} XX%\n`;
+    pkg += `Projected Score: ${g.homeTeam} X — ${g.opponent} X\n`;
+    pkg += `Confidence: <Low/Moderate/High/Very High>\n\n`;
+    pkg += `**Key Matchup Factors**\n<bullet points>\n\n`;
+    pkg += `**Common Opponents**\n<analysis>\n\n`;
+    pkg += `**Scouting Report**\n<2-3 paragraph analysis>\n\n`;
+    pkg += `===PREDICTION_END===\n\n`;
+  }
 
   document.getElementById('pkgOutput').textContent = pkg;
   document.getElementById('pkgOutput').classList.add('show');
@@ -970,13 +980,19 @@ function copyPackage() {
 function importPredictions() {
   const raw = document.getElementById('pkgPaste').value.trim();
   if (!raw) return;
-  // Split on game separators and parse each prediction block
-  const blocks = raw.split(/\n---+\n/).filter(b => b.trim() && b.includes('PREDICTED WINNER'));
+
+  let blocks;
+  if (raw.includes('===PREDICTION_END===')) {
+    blocks = raw.split(/===PREDICTION_END===/g).filter(b => b.trim() && b.includes('PREDICTED WINNER'));
+  } else {
+    blocks = raw.split(/\n-{3,}\n/).filter(b => b.trim() && b.includes('PREDICTED WINNER'));
+  }
+
   let added = 0;
   const usr = loadUser();
   const date = document.getElementById('pkgDate').value || new Date().toISOString().slice(0,10);
   for (const block of blocks) {
-    const vsM = block.match(/##\s*([^\n]+?)\s+vs\.?\s+([^\n]+)/i);
+    const vsM = block.match(/##\s*(.+?)\s+vs\.?\s+(.+?)\s*$/im);
     if (!vsM) continue;
     const teamA = vsM[1].trim(), teamB = vsM[2].trim();
     const winM = block.match(/PREDICTED WINNER:\s*(.+)/i);
@@ -1152,76 +1168,89 @@ function setRpiPasteTab(cls, btn) {
 }
 
 function parseRpiText(text, cls) {
-  // UHSAA copy-paste format (observed):
-  // Line 1: "RankSchoolRPI...1"  (header + first rank jammed together)
-  // Line 2: "Corner Canyon"       (school name — pure text)
-  // Line 3: "0.7044080.7777780.6604940.5718597-22"  (4 floats + record + next rank)
-  // Line 4: "Farmington"
-  // Line 5: "0.689712..."
-  // So: name lines alternate with data blob lines.
+  // Two formats observed:
+  //
+  // 6A/5A format (4 packed floats, 6 decimal places each):
+  //   Name line:  "Corner Canyon"
+  //   Data line:  "0.7044080.7777780.6604940.5718597-22"
+  //               = 4×(0.NNNNNN) + W-L + nextRank
+  //
+  // 4A format (single rating, W-L-T record):
+  //   Name line:  "Juan Diego Catholic (Draper, UT)"
+  //   Data line:  "14.07866-2-02"
+  //               = rating(4or3 decimals) + W + "-" + L + "-0" + nextRank
 
   const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
   const teams = [];
 
   function isNameLine(l) {
-    // A school name: starts with a letter, contains only letters/spaces/apostrophes
-    return /^[A-Za-z][A-Za-z\s']+$/.test(l);
+    // Starts with a letter; may contain letters, spaces, apostrophes, parens, commas, dots
+    // Must NOT start with a digit or minus sign (those are data lines)
+    return /^[A-Za-z]/.test(l) && !/^\d/.test(l);
   }
 
-  function parseDataBlob(blob) {
-    // Extract 4 floats of form 0.NNNNNN then parse tail for record
-    const floats = [];
-    let pos = 0;
-    let m;
+  function parse6aBlob(blob) {
+    // Find all 0.NNNNNN floats
     const floatRe = /0\.\d{6}/g;
-    floatRe.lastIndex = 0;
-    while ((m = floatRe.exec(blob)) !== null) {
-      floats.push(parseFloat(m[0]));
-    }
-    const rpi = floats[0] ?? null;
+    const floatMatches = [...blob.matchAll(floatRe)];
+    if (floatMatches.length === 0) return null;
+    const rpi = parseFloat(floatMatches[0][0]);
 
-    // Find tail after last float match
-    const lastFloatMatch = [...blob.matchAll(/0\.\d{6}/g)].pop();
-    let record = '';
-    if (lastFloatMatch) {
-      const tail = blob.slice(lastFloatMatch.index + 8);
-      // tail = "W-L[rank_digits]"
-      const tm = tail.match(/^(\d{1,2})-(\d+)/);
-      if (tm) {
-        const w = parseInt(tm[1]);
-        const lRaw = tm[2];
-        let l;
-        if (lRaw.length <= 1) {
-          l = lRaw;
-        } else {
-          // Strip appended rank: take first digit (or two if >2 chars)
-          l = lRaw[0];
-          // If remaining is still > 20, it's probably 2-digit losses: rare but handle
-          if (lRaw.length >= 2 && parseInt(lRaw.slice(0,2)) <= 20 && lRaw.length === 2) {
-            // Could be no rank appended — but HS lacrosse losses rarely >9
-            // Default: take first digit as losses
-            l = lRaw[0];
-          }
-        }
-        record = w + '-' + l;
+    // Tail: everything after the last float match
+    const last = floatMatches[floatMatches.length - 1];
+    const tail = blob.slice(last.index + 8); // 0.NNNNNN = 8 chars
+    // tail = "W-L[rank]" — take W and first digit of L only
+    const tm = tail.match(/^(\d{1,2})-(\d+)/);
+    if (!tm) return { rpi, record: '' };
+    const w = tm[1];
+    const lRaw = tm[2];
+    // Strip appended rank: losses in HS lacrosse rarely exceed single digits
+    const l = lRaw.length > 1 ? lRaw[0] : lRaw;
+    return { rpi, record: `${w}-${l}` };
+  }
+
+  function parse4aBlob(blob) {
+    // Pattern: rating(3or4 decimals) + W(1-2 digits) + "-" + L(1-2 digits) + "-0" + rank(1-2 digits)
+    for (const dec of [4, 3]) {
+      const pat = new RegExp(`^(-?\\d+\\.\\d{${dec}})(\\d{1,2})-(\\d{1,2})-0(\\d{1,2})$`);
+      const m = blob.match(pat);
+      if (m) {
+        return { rpi: parseFloat(m[1]), record: `${m[2]}-${m[3]}-0` };
       }
     }
-    return { rpi, record };
+    return null;
+  }
+
+  function is4aBlob(blob) {
+    // 4A blobs: don't start with "0." (they start with a larger number or negative)
+    // and have the -0[rank] tie pattern at the end
+    return /-0\d{1,2}$/.test(blob) && !/^0\./.test(blob);
+  }
+
+  // Strip city/state from 4A names: "Juan Diego Catholic (Draper, UT)" -> "Juan Diego Catholic"
+  function cleanName(name) {
+    return name.replace(/\s*\([^)]+\)\s*$/, '').trim();
   }
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     if (!isNameLine(line)) continue;
-    // Next line should be the data blob
+
     const next = lines[i + 1];
     if (!next) continue;
-    if (isNameLine(next)) continue; // two names in a row = skip
-    if (!/^0\./.test(next) && !/^-?0\./.test(next)) continue; // blob must start with float
+    if (isNameLine(next)) continue; // two names = skip
 
-    const { rpi, record } = parseDataBlob(next);
-    if (rpi === null) continue;
-    teams.push({ name: line, rpi, class: cls, record });
-    i++; // skip the blob line
+    let result = null;
+    if (is4aBlob(next)) {
+      result = parse4aBlob(next);
+    } else {
+      result = parse6aBlob(next);
+    }
+
+    if (result && result.rpi !== null) {
+      teams.push({ name: cleanName(line), rpi: result.rpi, class: cls, record: result.record });
+      i++; // skip data line
+    }
   }
 
   return teams;
